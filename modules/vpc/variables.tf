@@ -1,7 +1,8 @@
-variable "vpc_cidr" {}
-variable "public_subnet_cidrs" {
-  type = list(string)
-}
-variable "private_subnet_cidrs" {
-  type = list(string)
+variable "alb_inputs" {
+  description = "Inputs for ALB module"
+  type = object({
+    vpc_id            = string
+    public_subnet_ids = list(string)
+    certificate_arn   = string
+  })
 }
