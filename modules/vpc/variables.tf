@@ -1,8 +1,8 @@
-variable "alb_inputs" {
-  description = "Inputs for ALB module"
+variable "vpc_inputs" {
+  description = "VPC input object"
   type = object({
-    vpc_id            = string
-    public_subnet_ids = list(string)
-    certificate_arn   = string
+    vpc_cidr            = string
+    public_subnet_cidrs = list(string)
+    private_subnet_cidrs = list(string)
   })
 }
