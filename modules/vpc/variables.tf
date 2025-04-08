@@ -1,8 +1,15 @@
-variable "vpc_inputs" {
-  description = "VPC input object"
-  type = object({
-    vpc_cidr            = string
-    public_subnet_cidrs = list(string)
-    private_subnet_cidrs = list(string)
-  })
+variable "vpc_cidr" {
+  description = "CIDR block for the VPC"
+  type        = string
 }
+
+variable "public_subnet_cidrs" {
+  description = "List of public subnet CIDR blocks"
+  type        = list(string)
+}
+
+variable "private_subnet_cidrs" {
+  description = "List of private subnet CIDR blocks"
+  type        = list(string)
+}
+

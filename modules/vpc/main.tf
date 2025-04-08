@@ -1,51 +1,36 @@
-resource "aws_security_group" "alb_sg" {
-  name   = "alb-sg"
-  vpc_id = var.alb_inputs.vpc_id
+resource "aws_vpc" "main" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_hostnames = true
+}
 
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_internet_gateway" "igw" {
+  vpc_id = aws_vpc.main.id
+}
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+resource "aws_subnet" "public" {
+  count                   = length(var.public_subnet_cidrs)
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.vpc_inputs.public_subnet_cidrs[count.index]
+  map_public_ip_on_launch = true
+}
+
+resource "aws_subnet" "private" {
+  count      = length(var.private_subnet_cidrs)
+  vpc_id     = aws_vpc.main.id
+  cidr_block = var.vpc_inputs.private_subnet_cidrs[count.index]
+}
+
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.igw.id
   }
 }
 
-resource "aws_lb" "this" {
-  name               = "app-alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = var.alb_inputs.public_subnet_ids
-}
-
-resource "aws_lb_target_group" "dummy" {
-  name        = "dummy-target"
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = var.alb_inputs.vpc_id
-  target_type = "ip"
-}
-
-resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.this.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = var.alb_inputs.certificate_arn
-
-  default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "ALB is up!"
-      status_code  = "200"
-    }
-  }
+resource "aws_route_table_association" "public" {
+  count          = length(aws_subnet.public)
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
 }
