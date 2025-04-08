@@ -25,8 +25,12 @@ resource "aws_lb" "this" {
   subnets            = var.public_subnet_ids
 }
 
+resource "random_id" "suffix" {
+  byte_length = 2
+}
+
 resource "aws_lb_target_group" "dummy" {
-  name        = "dummy-target"
+  name        = "dummy-target-${random_id.suffix.hex}"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = var.vpc_id

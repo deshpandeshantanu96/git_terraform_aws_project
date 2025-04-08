@@ -10,5 +10,5 @@ bastion_config = {
 }
 
 alb_config = {
-  acm_certificate_arn = "arn:aws:acm:us-east-1:445567099825:certificate/003dc0a6-707e-403e-a87a-7a07378b5737"
+  acm_certificate_arn = "arn:aws:acm:us-east-1:445567099825:certificate/c7f40eaf-0ffc-4b11-bd65-b62860e1d853"
 }
