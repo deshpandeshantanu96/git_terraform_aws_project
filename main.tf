@@ -1,21 +1,28 @@
 module "vpc" {
   source = "./modules/vpc"
-  vpc_cidr = "10.0.0.0/16"
-  public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
-  private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
+
+  vpc_inputs = {
+    vpc_cidr            = var.vpc_config.vpc_cidr
+    public_subnet_cidrs = var.vpc_config.public_subnet_cidrs
+    private_subnet_cidrs = var.vpc_config.private_subnet_cidrs
+  }
 }
 
 module "bastion" {
   source = "./modules/bastion"
-  vpc_id = module.vpc.vpc_id
-  public_subnet_id = module.vpc.public_subnet_ids[0]
-  my_ip = var.my_ip
-  key_name = var.key_name
+  bastion_inputs = {
+    vpc_id           = module.vpc.vpc_id
+    public_subnet_id = module.vpc.public_subnet_ids[0]
+    my_ip            = var.bastion_config.my_ip
+    key_name         = var.bastion_config.key_name
+  }
 }
 
 module "alb" {
   source = "./modules/alb"
-  vpc_id = module.vpc.vpc_id
-  public_subnet_ids = module.vpc.public_subnet_ids
-  certificate_arn = var.acm_certificate_arn
+  alb_inputs = {
+    vpc_id            = module.vpc.vpc_id
+    public_subnet_ids = module.vpc.public_subnet_ids
+    certificate_arn   = var.alb_config.acm_certificate_arn
+  }
 }
