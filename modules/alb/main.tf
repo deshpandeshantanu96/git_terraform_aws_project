@@ -17,8 +17,12 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
+resource "random_id" "lb_suffix" {
+  byte_length = 2
+}
+
 resource "aws_lb" "this" {
-  name               = "app-alb"
+  name               = "app-alb-${random_id.lb_suffix.hex}"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
