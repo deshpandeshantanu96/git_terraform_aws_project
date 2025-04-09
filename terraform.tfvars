@@ -3,12 +3,7 @@ vpc_config = {
   public_subnet_cidrs = ["10.0.1.0/24", "10.0.2.0/24"]
   private_subnet_cidrs = ["10.0.3.0/24", "10.0.4.0/24"]
 }
-"""
-bastion_config = {
-  my_ip    = "110.226.177.196/32"
-  key_name = "terraform_application_key"
-}
-"""
+
 bastion_config = {
   my_ip    = "110.226.177.255/32"
   key_name = "terraform_application_key"
