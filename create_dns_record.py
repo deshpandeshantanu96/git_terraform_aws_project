@@ -98,8 +98,13 @@ class DNSManager:
     def create_dns_record(self, hosted_zone_id: str, domain_name: str, target_dns: str) -> dict:
         """Create or update DNS record"""
         try:
+            # Ensure the domain name is a fully qualified domain name (FQDN)
             if not domain_name.endswith('.'):
                 domain_name += '.'
+
+            # Ensure the domain is part of the hosted zone (subdomain of dns_zone.internal)
+            if "dns_zone.internal." not in domain_name:
+                raise ValueError(f"Domain name {domain_name} is not a subdomain of dns_zone.internal.")
 
             # Create CNAME record pointing to the internal load balancer
             response = self.route53.change_resource_record_sets(
@@ -121,6 +126,7 @@ class DNSManager:
         except Exception as e:
             logger.error(f"Failed to create DNS record: {e}")
             raise
+
 
 def main():
     try:
