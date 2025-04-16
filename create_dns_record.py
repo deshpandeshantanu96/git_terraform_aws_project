@@ -135,7 +135,7 @@ def main():
         manager = DNSManager()
         
         # Configuration
-        domain_name = "service.domain.internal"
+        domain_name = "service.dns_zone.internal"
         vpc_id = "vpc-07281342a2b001221"  # Your VPC ID
         lb_name_pattern = "app"  # Pattern to match internal LB name
         subnet_ids = ['subnet-08db0b7801dd94566', 'subnet-06b342bdcd743e7f6']  # Replace with your actual subnet IDs
