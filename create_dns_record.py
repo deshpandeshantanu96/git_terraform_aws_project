@@ -1,4 +1,5 @@
 import boto3
+import time
 
 # Initialize boto3 clients for Route 53 and ELB
 route53_client = boto3.client('route53')
@@ -16,7 +17,7 @@ def create_hosted_zone(domain_name, vpc_id):
         VPC={
             'VPCRegion': 'us-east-1',
             'VPCId': vpc_id
-        }
+        },
         CallerReference=str(time.time())
     )
     print(f"Created Hosted Zone: {response['HostedZone']['Id']}")
