@@ -14,8 +14,10 @@ def create_hosted_zone(domain_name, vpc_id):
             'PrivateZone': True  # Private DNS zone
         },
         VPC={
+            'VPCRegion': 'us-east-1',
             'VPCId': vpc_id
         }
+        CallerReference=str(time.time())
     )
     print(f"Created Hosted Zone: {response['HostedZone']['Id']}")
     return response['HostedZone']['Id']
@@ -49,12 +51,12 @@ def create_record_set(hosted_zone_id, domain_name, lb_dns_name):
     print(f"Created DNS Record: {response}")
 
 # Main Execution
-domain_name = "service.test.internal"  # The domain name to be used
-load_balancer_name = "my-internal-lb"  # Internal LB name
-vpc_id = "vpc-xxxxxx"  # Your VPC ID
+domain_name = "service.domain.internal"  # The domain name to be used
+load_balancer_name = "internal-lb-1"  # Internal LB name
+vpc_id = "vpc-07281342a2b001221"  # Your VPC ID
 
 # Step 1: Create Hosted Zone
-hosted_zone_id = create_hosted_zone("example.internal", vpc_id)
+hosted_zone_id = create_hosted_zone("exadnsmple.internal", vpc_id)
 
 # Step 2: Get the DNS Name of the Internal LB
 lb_dns_name = get_internal_lb_dns(load_balancer_name)
