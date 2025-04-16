@@ -57,7 +57,7 @@ load_balancer_name = "app-lb-1"  # Internal LB name
 vpc_id = "vpc-07281342a2b001221"  # Your VPC ID
 
 # Step 1: Create Hosted Zone
-hosted_zone_id = create_hosted_zone("exadnsmple.internal", vpc_id)
+hosted_zone_id = create_hosted_zone("dns_zone.internal", vpc_id)
 
 # Step 2: Get the DNS Name of the Internal LB
 lb_dns_name = get_internal_lb_dns(load_balancer_name)
