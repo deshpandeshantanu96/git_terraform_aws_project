@@ -1,9 +1,7 @@
 name: Deploy DNS Setup
 
 on:
-  push:
-    branches:
-      - main  # Trigger when pushing to the 'main' branch
+  workflow_call:  # This allows the workflow to be called by other workflows
 
 jobs:
   setup_dns:
