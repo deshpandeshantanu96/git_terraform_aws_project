@@ -6,6 +6,7 @@ on:
       AWS_DEFAULT_REGION:
         required: true
         type: string
+        default: us-east-1
 
 jobs:
   setup_dns:
@@ -33,7 +34,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
 
-      - name: Run Python script to create DNS record
+      - name: Run DNS Setup Script
         run: |
           python create_dns_record.py
         env:
