@@ -1,7 +1,7 @@
 import boto3
 import time
 import logging
-from typing import Optional  # Add this import
+from typing import Optional  # Import Optional for type hints
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -76,6 +76,25 @@ class DNSManager:
             logger.error(f"Failed to find internal load balancer: {e}")
             raise
 
+    def create_internal_load_balancer(self, lb_name: str, subnet_ids: list, security_group_ids: list) -> dict:
+        """Create internal load balancer"""
+        try:
+            # Create the internal load balancer
+            response = self.elbv2.create_load_balancer(
+                Name=lb_name,
+                Subnets=subnet_ids,  # Provide your subnet IDs here
+                Scheme='internal',  # Internal Load Balancer
+                SecurityGroups=security_group_ids,  # Provide your security group IDs here
+                Type='application',  # Use 'network' for NLB
+                IpAddressType='ipv4'
+            )
+            lb = response['LoadBalancers'][0]
+            logger.info(f"Created internal load balancer: {lb['LoadBalancerName']} with DNS: {lb['DNSName']}")
+            return lb
+        except Exception as e:
+            logger.error(f"Failed to create internal load balancer: {e}")
+            raise
+
     def create_dns_record(self, hosted_zone_id: str, domain_name: str, target_dns: str) -> dict:
         """Create or update DNS record"""
         try:
@@ -112,6 +131,8 @@ def main():
         domain_name = "service.domain.internal"
         vpc_id = "vpc-07281342a2b001221"  # Your VPC ID
         lb_name_pattern = "app"  # Pattern to match internal LB name
+        subnet_ids = ['subnet-xxxxxxxx', 'subnet-yyyyyyyy']  # Replace with your actual subnet IDs
+        security_group_ids = ['sg-xxxxxxxx']  # Replace with your security group ID
         
         logger.info(f"Starting DNS setup in region {manager.region}")
         
@@ -119,7 +140,14 @@ def main():
         hosted_zone_id = manager.create_hosted_zone("dns_zone.internal", vpc_id)
         
         # Step 2: Find internal LB by name pattern or create it
-        lb_dns_name = manager.find_internal_load_balancer(lb_name_pattern)['DNSName']
+        try:
+            lb = manager.find_internal_load_balancer(lb_name_pattern)
+            lb_dns_name = lb['DNSName']
+            logger.info(f"Using existing internal load balancer: {lb['LoadBalancerName']} (DNS: {lb_dns_name})")
+        except ValueError:
+            logger.info("Internal load balancer not found, creating a new one.")
+            lb = manager.create_internal_load_balancer("my-internal-lb", subnet_ids, security_group_ids)
+            lb_dns_name = lb['DNSName']
         
         # Step 3: Create DNS record for internal LB
         manager.create_dns_record(hosted_zone_id, domain_name, lb_dns_name)
