@@ -53,7 +53,7 @@ def create_record_set(hosted_zone_id, domain_name, lb_dns_name):
 
 # Main Execution
 domain_name = "service.domain.internal"  # The domain name to be used
-load_balancer_name = "internal-lb-1"  # Internal LB name
+load_balancer_name = "app-lb-1"  # Internal LB name
 vpc_id = "vpc-07281342a2b001221"  # Your VPC ID
 
 # Step 1: Create Hosted Zone
