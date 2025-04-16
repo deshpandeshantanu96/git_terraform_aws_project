@@ -9,7 +9,7 @@ elb_client = boto3.client('elbv2')
 def create_hosted_zone(domain_name, vpc_id):
     response = route53_client.create_hosted_zone(
         Name=domain_name,
-        CallerReference=str(hash(domain_name)),
+        #CallerReference=str(hash(domain_name)),
         HostedZoneConfig={
             'Comment': 'Private DNS Zone for internal LB',
             'PrivateZone': True  # Private DNS zone
