@@ -2,6 +2,16 @@ name: Deploy DNS Setup
 
 on:
   workflow_call:  # This allows the workflow to be called by other workflows
+    inputs:
+      AWS_ACCESS_KEY_ID:
+        required: true
+        type: secret
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+        type: secret
+      AWS_DEFAULT_REGION:
+        required: true
+        type: string
 
 jobs:
   setup_dns:
@@ -25,6 +35,6 @@ jobs:
       run: |
         python create_dns_record.py  # Path to your Python script
       env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Set AWS keys securely
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: us-east-1  # Set the AWS region
+        AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}  # Use the input secrets
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}  # Use the region passed in inputs
