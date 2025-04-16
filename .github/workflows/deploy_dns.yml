@@ -1,40 +1,42 @@
 name: Deploy DNS Setup
 
 on:
-  workflow_call:  # This allows the workflow to be called by other workflows
+  workflow_call:
     inputs:
-      AWS_ACCESS_KEY_ID:
-        required: true
-        type: string
-      AWS_SECRET_ACCESS_KEY:
-        required: true
-        type: string
       AWS_DEFAULT_REGION:
         required: true
         type: string
 
 jobs:
   setup_dns:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'  # Use Python 3.x
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install boto3  # Install AWS SDK for Python (Boto3)
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install boto3
 
-    - name: Run Python script to create DNS record
-      run: |
-        python create_dns_record.py  # Path to your Python script
-      env:
-        AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}  # Use the input secrets
-        AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}  # Use the region passed in inputs
+      - name: Verify AWS Credentials
+        run: |
+          aws sts get-caller-identity
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
+
+      - name: Run Python script to create DNS record
+        run: |
+          python create_dns_record.py
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
