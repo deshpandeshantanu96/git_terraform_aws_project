@@ -1,10 +1,9 @@
 name: Terraform Deployment
 
 on:
-  #push:
-    #branches:
-      #- main
-  #pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   terraform:
@@ -42,5 +41,17 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -input=false
+
+  # New Job to Call the DNS Setup Workflow
+  dns_setup:
+    needs: terraform  # Only run after terraform job is successful
+    uses: ./path/to/deploy_dns.yml  # Path to the reusable DNS setup workflow
+    with:
+      # Pass any inputs if needed (if the deploy_dns.yml accepts inputs)
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: us-east-1
+
 
 #Change:41
