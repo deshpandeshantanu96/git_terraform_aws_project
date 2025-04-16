@@ -5,10 +5,10 @@ on:
     inputs:
       AWS_ACCESS_KEY_ID:
         required: true
-        type: secret
+        type: string
       AWS_SECRET_ACCESS_KEY:
         required: true
-        type: secret
+        type: string
       AWS_DEFAULT_REGION:
         required: true
         type: string
