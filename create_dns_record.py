@@ -131,8 +131,8 @@ def main():
         domain_name = "service.domain.internal"
         vpc_id = "vpc-07281342a2b001221"  # Your VPC ID
         lb_name_pattern = "app"  # Pattern to match internal LB name
-        subnet_ids = ['subnet-xxxxxxxx', 'subnet-yyyyyyyy']  # Replace with your actual subnet IDs
-        security_group_ids = ['sg-xxxxxxxx']  # Replace with your security group ID
+        subnet_ids = ['subnet-08db0b7801dd94566', 'subnet-06b342bdcd743e7f6']  # Replace with your actual subnet IDs
+        security_group_ids = ['sg-0fe37db049ea690a5']  # Replace with your security group ID
         
         logger.info(f"Starting DNS setup in region {manager.region}")
         
@@ -160,3 +160,4 @@ def main():
 
 if __name__ == "__main__":
     exit(main())
+
