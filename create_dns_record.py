@@ -70,37 +70,47 @@ class DNSManager:
     def _get_existing_zone_id(self, domain_name: str) -> str:
         """Get ID of existing private hosted zone"""
         try:
-            zones = self.route53.list_hosted_zones_by_name(DNSName=domain_name)
-            for zone in zones['HostedZones']:
-                if zone['Name'] == domain_name and zone['Config']['PrivateZone']:
-                    return zone['Id']
+            paginator = self.route53.get_paginator('list_hosted_zones_by_name')
+            for page in paginator.paginate(DNSName=domain_name):
+                for zone in page['HostedZones']:
+                    if zone['Name'] == domain_name and zone['Config']['PrivateZone']:
+                        return zone['Id']
             raise ValueError(f"No existing private hosted zone found for {domain_name}")
         except Exception as e:
             logger.error(f"Failed to get existing zone ID: {e}")
             raise
 
-    def find_internal_load_balancer(self, name_pattern: str = None) -> dict:
+    def find_internal_load_balancer(self, load_balancer_name_pattern: Optional[str] = None) -> dict:
         """Find internal load balancer by name pattern or return first found"""
         try:
             paginator = self.elbv2.get_paginator('describe_load_balancers')
+            found_lb = None
             for page in paginator.paginate():
                 for lb in page['LoadBalancers']:
                     if lb['Scheme'] == 'internal':  # Key filter for internal LBs
-                        if not name_pattern or name_pattern.lower() in lb['LoadBalancerName'].lower():
-                            # Get VPC association to verify it matches our VPC
-                            lb_vpc = self.elbv2.describe_tags(
-                                ResourceArns=[lb['LoadBalancerArn']]
-                            )
-                            logger.info(f"Found internal LB: {lb['LoadBalancerName']}")
-                            return lb
-            raise ValueError("No internal load balancers found matching criteria")
+                        if load_balancer_name_pattern and load_balancer_name_pattern.lower() not in lb['LoadBalancerName'].lower():
+                            continue
+                        # Get VPC association to verify it matches our VPC
+                        lb_vpc = self.elbv2.describe_tags(
+                            ResourceArns=[lb['LoadBalancerArn']]
+                        )
+                        logger.info(f"Found internal LB: {lb['LoadBalancerName']}")
+                        found_lb = lb
+                        break
+                if found_lb:
+                    break
+
+            if not found_lb:
+                raise ValueError("No internal load balancers found matching criteria")
+
+            return found_lb
         except Exception as e:
             logger.error(f"Failed to find internal load balancer: {e}")
             raise
 
-    def get_lb_dns_name(self, name_pattern: str = None) -> str:
+    def get_lb_dns_name(self, load_balancer_name_pattern: Optional[str] = None) -> str:
         """Get DNS name of internal load balancer"""
-        lb = self.find_internal_load_balancer(name_pattern)
+        lb = self.find_internal_load_balancer(load_balancer_name_pattern)
         logger.info(f"Using internal LB: {lb['LoadBalancerName']} (DNS: {lb['DNSName']})")
         return lb['DNSName']
 
