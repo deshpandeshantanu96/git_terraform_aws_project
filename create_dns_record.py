@@ -1,7 +1,6 @@
 import boto3
 import time
 import logging
-from typing import Optional
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -10,6 +9,7 @@ logger = logging.getLogger(__name__)
 class DNSManager:
     def __init__(self):
         try:
+            # Initialize AWS clients
             self.route53 = boto3.client('route53')
             self.elbv2 = boto3.client('elbv2')
             self.ec2 = boto3.client('ec2')
@@ -19,25 +19,23 @@ class DNSManager:
             raise
 
     def create_hosted_zone(self, domain_name: str, vpc_id: str) -> str:
-        """Create or get existing private hosted zone"""
+        """Create a private hosted zone"""
         try:
             if not domain_name.endswith('.'):
                 domain_name += '.'
 
-            # Verify VPC exists and is in correct region
-            self._validate_vpc(vpc_id)
-
+            # Create the hosted zone in Route 53
             response = self.route53.create_hosted_zone(
                 Name=domain_name,
                 HostedZoneConfig={
                     'Comment': 'Private DNS Zone for internal LB',
-                    'PrivateZone': True
+                    'PrivateZone': True  # This makes it a private hosted zone
                 },
                 VPC={
                     'VPCRegion': self.region,
                     'VPCId': vpc_id
                 },
-                CallerReference=str(time.time())
+                CallerReference=str(time.time())  # Unique reference
             )
             logger.info(f"Created Hosted Zone: {response['HostedZone']['Id']}")
             return response['HostedZone']['Id']
@@ -46,25 +44,6 @@ class DNSManager:
             return self._get_existing_zone_id(domain_name)
         except Exception as e:
             logger.error(f"Failed to create hosted zone: {e}")
-            raise
-
-    def _validate_vpc(self, vpc_id: str) -> None:
-        """Verify VPC exists and is in correct region"""
-        try:
-            response = self.ec2.describe_vpcs(VpcIds=[vpc_id])
-            if not response['Vpcs']:
-                raise ValueError(f"VPC {vpc_id} not found")
-            
-            # Get the AZ to determine region
-            az_response = self.ec2.describe_availability_zones()
-            vpc_region = az_response['AvailabilityZones'][0]['RegionName']
-            
-            if vpc_region != self.region:
-                raise ValueError(f"VPC {vpc_id} is in {vpc_region}, but we're working in {self.region}")
-                
-            logger.info(f"Validated VPC {vpc_id} in region {vpc_region}")
-        except Exception as e:
-            logger.error(f"VPC validation failed: {e}")
             raise
 
     def _get_existing_zone_id(self, domain_name: str) -> str:
@@ -80,39 +59,21 @@ class DNSManager:
             logger.error(f"Failed to get existing zone ID: {e}")
             raise
 
-    def find_internal_load_balancer(self, load_balancer_name_pattern: Optional[str] = None) -> dict:
-        """Find internal load balancer by name pattern or return first found"""
+    def find_internal_load_balancer(self, lb_name_pattern: Optional[str] = None) -> dict:
+        """Find internal load balancer by name pattern"""
         try:
             paginator = self.elbv2.get_paginator('describe_load_balancers')
-            found_lb = None
             for page in paginator.paginate():
                 for lb in page['LoadBalancers']:
                     if lb['Scheme'] == 'internal':  # Key filter for internal LBs
-                        if load_balancer_name_pattern and load_balancer_name_pattern.lower() not in lb['LoadBalancerName'].lower():
+                        if lb_name_pattern and lb_name_pattern.lower() not in lb['LoadBalancerName'].lower():
                             continue
-                        # Get VPC association to verify it matches our VPC
-                        lb_vpc = self.elbv2.describe_tags(
-                            ResourceArns=[lb['LoadBalancerArn']]
-                        )
-                        logger.info(f"Found internal LB: {lb['LoadBalancerName']}")
-                        found_lb = lb
-                        break
-                if found_lb:
-                    break
-
-            if not found_lb:
-                raise ValueError("No internal load balancers found matching criteria")
-
-            return found_lb
+                        logger.info(f"Found internal LB: {lb['LoadBalancerName']} (DNS: {lb['DNSName']})")
+                        return lb
+            raise ValueError("No internal load balancers found matching criteria")
         except Exception as e:
             logger.error(f"Failed to find internal load balancer: {e}")
             raise
-
-    def get_lb_dns_name(self, load_balancer_name_pattern: Optional[str] = None) -> str:
-        """Get DNS name of internal load balancer"""
-        lb = self.find_internal_load_balancer(load_balancer_name_pattern)
-        logger.info(f"Using internal LB: {lb['LoadBalancerName']} (DNS: {lb['DNSName']})")
-        return lb['DNSName']
 
     def create_dns_record(self, hosted_zone_id: str, domain_name: str, target_dns: str) -> dict:
         """Create or update DNS record"""
@@ -120,14 +81,15 @@ class DNSManager:
             if not domain_name.endswith('.'):
                 domain_name += '.'
 
+            # Create CNAME record pointing to the internal load balancer
             response = self.route53.change_resource_record_sets(
                 HostedZoneId=hosted_zone_id,
                 ChangeBatch={
                     'Changes': [{
-                        'Action': 'UPSERT',
+                        'Action': 'UPSERT',  # Use UPSERT to create or update the record
                         'ResourceRecordSet': {
                             'Name': domain_name,
-                            'Type': 'CNAME',
+                            'Type': 'CNAME',  # CNAME to point to LB DNS
                             'TTL': 60,
                             'ResourceRecords': [{'Value': target_dns}]
                         }
@@ -142,11 +104,12 @@ class DNSManager:
 
 def main():
     try:
+        # Initialize DNSManager
         manager = DNSManager()
         
         # Configuration
         domain_name = "service.domain.internal"
-        vpc_id = "vpc-07281342a2b001221"
+        vpc_id = "vpc-07281342a2b001221"  # Your VPC ID
         lb_name_pattern = "app"  # Pattern to match internal LB name
         
         logger.info(f"Starting DNS setup in region {manager.region}")
@@ -155,9 +118,9 @@ def main():
         hosted_zone_id = manager.create_hosted_zone("dns_zone.internal", vpc_id)
         
         # Step 2: Find internal LB by name pattern
-        lb_dns_name = manager.get_lb_dns_name(lb_name_pattern)
+        lb_dns_name = manager.find_internal_load_balancer(lb_name_pattern)['DNSName']
         
-        # Step 3: Create DNS record
+        # Step 3: Create DNS record for internal LB
         manager.create_dns_record(hosted_zone_id, domain_name, lb_dns_name)
         
         logger.info("DNS setup completed successfully")
