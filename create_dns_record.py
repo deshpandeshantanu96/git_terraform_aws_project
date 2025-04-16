@@ -1,6 +1,7 @@
 import boto3
 import time
 import logging
+from typing import Optional  # Add this import
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -117,7 +118,7 @@ def main():
         # Step 1: Create or get hosted zone
         hosted_zone_id = manager.create_hosted_zone("dns_zone.internal", vpc_id)
         
-        # Step 2: Find internal LB by name pattern
+        # Step 2: Find internal LB by name pattern or create it
         lb_dns_name = manager.find_internal_load_balancer(lb_name_pattern)['DNSName']
         
         # Step 3: Create DNS record for internal LB
