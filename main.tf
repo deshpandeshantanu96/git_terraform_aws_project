@@ -38,7 +38,7 @@ module "eks" {
   source = "./modules/eks"
 
   cluster_name    = local.final_eks_config.cluster_name
-  cluster_version = local.final_eks_config.version
+  cluster_version = local.final_eks_config.cluster_version
   region          = local.final_eks_config.region
   vpc_id          = local.final_eks_config.vpc_id
   subnet_ids      = local.final_eks_config.subnet_ids
