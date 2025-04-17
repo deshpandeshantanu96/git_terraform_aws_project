@@ -29,7 +29,7 @@ locals {
       subnet_ids      = module.vpc.private_subnet_ids
       role_arn        = aws_iam_role.eks_cluster_role.arn
       node_role_arn   = aws_iam_role.eks_node_role.arn
-      bastion_ip      = module.bastion.bastion_ip
+      bastion_ip      = module.bastion.bastion_public_ip
     }
   )
 }
