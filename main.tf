@@ -24,10 +24,10 @@ module "alb" {
 module "eks" {
   source = "./modules/eks"
 
-  cluster_name         = var.eks_config.cluster_name
-  vpc_id               = var.eks_config.vpc_id
-  subnet_ids           = var.eks_config.subnet_ids
-  region               = var.eks_config.region
-  bastion_ip           = var.eks_config.bastion_ip
-  cluster_version      = var.eks_config.cluster_version
+  cluster_name    = var.eks_config.name
+  cluster_version = var.eks_config.version
+  vpc_id          = var.eks_config.vpc_id
+  subnet_ids      = var.eks_config.subnet_ids
+  region          = var.eks_config.region
+  bastion_ip      = module.bastion.bastion_public_ip
 }
