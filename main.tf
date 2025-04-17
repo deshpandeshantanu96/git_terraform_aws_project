@@ -32,6 +32,7 @@ module "eks" {
   bastion_ip      = module.bastion.bastion_public_ip
   role_arn        = aws_iam_role.eks_cluster_role.arn  # Pass the created role here
   node_role_arn   = aws_iam_role.eks_node_role.arn
+  
 }
 
 resource "aws_iam_role" "eks_cluster_role" {
