@@ -23,19 +23,13 @@ variable "alb_config" {
 }
 
 
+# Basic EKS Config (only few fields manually from tfvars)
 variable "eks_config" {
-  description = "Configuration for the EKS cluster"
+  description = "Base configuration for the EKS Cluster. Full config is completed using outputs in locals."
   type = object({
-    name            = string
-    version         = string
-    vpc_id          = string
-    subnet_ids      = list(string)
-    region          = string
-    bastion_config  = object({
-      enabled   = bool
-      ip        = string
-      key_name  = string
-    })
+    name    = string
+    version = string
+    region  = string
   })
 
   validation {
