@@ -1,11 +1,11 @@
 # modules/eks/variables.tf
 
-variable "name" {
+variable "cluster_name" {
   description = "Name of the EKS Cluster"
   type        = string
 }
 
-variable "version" {
+variable "cluster_version" {
   description = "Kubernetes version for the EKS Cluster"
   type        = string
 }

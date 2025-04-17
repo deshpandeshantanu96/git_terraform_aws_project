@@ -27,8 +27,8 @@ variable "alb_config" {
 variable "eks_config" {
   description = "Base configuration for the EKS Cluster. Full config is completed using outputs in locals."
   type = object({
-    name    = string
-    version = string
+    cluster_name    = string
+    cluster_version = string
     region  = string
   })
 
