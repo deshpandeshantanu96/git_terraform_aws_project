@@ -24,16 +24,27 @@ module "alb" {
 module "eks" {
   source = "./modules/eks"
 
-  cluster_name    = var.eks_config.name
-  cluster_version = var.eks_config.version
-  vpc_id          = var.eks_config.vpc_id
-  subnet_ids      = var.eks_config.subnet_ids
-  region          = var.eks_config.region
-  bastion_ip      = module.bastion.bastion_public_ip
+  eks_config = local.final_eks_config
   role_arn        = aws_iam_role.eks_cluster_role.arn  # Pass the created role here
   node_role_arn   = aws_iam_role.eks_node_role.arn
   
 }
+
+locals {
+  final_eks_config = merge(
+    var.eks_config,
+    {
+      vpc_id        = module.vpc.vpc_id
+      subnet_ids    = module.vpc.private_subnet_ids
+      bastion_config = {
+        enabled   = true
+        ip        = module.bastion.bastion_ip
+        key_name  = module.bastion.key_name
+      }
+    }
+  )
+}
+
 
 resource "aws_iam_role" "eks_cluster_role" {
   name = "eks-cluster-role"
