@@ -20,3 +20,14 @@ module "alb" {
   public_subnet_ids = module.vpc.public_subnet_ids
   certificate_arn   = var.alb_config.acm_certificate_arn
 }
+
+module "eks" {
+  source = "./modules/eks"
+
+  cluster_name         = var.eks_config.cluster_name
+  vpc_id               = var.eks_config.vpc_id
+  subnet_ids           = var.eks_config.subnet_ids
+  region               = var.eks_config.region
+  bastion_ip           = var.eks_config.bastion_ip
+  cluster_version      = var.eks_config.cluster_version
+}

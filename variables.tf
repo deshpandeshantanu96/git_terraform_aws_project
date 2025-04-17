@@ -21,3 +21,25 @@ variable "alb_config" {
     acm_certificate_arn = string
   })
 }
+
+
+variable "eks_config" {
+  description = "Configuration for the EKS cluster"
+  type = object({
+    name            = string
+    version         = string
+    vpc_id          = string
+    subnet_ids      = list(string)
+    region          = string
+    bastion_config  = object({
+      enabled   = bool
+      ip        = string
+      key_name  = string
+    })
+  })
+
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]{0,99}$", var.eks_config.name))
+    error_message = "EKS cluster name must be 1-100 characters long, start with a letter, and can contain only alphanumeric characters and hyphens."
+  }
+}
