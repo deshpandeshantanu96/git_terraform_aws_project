@@ -21,28 +21,30 @@ module "alb" {
   certificate_arn   = var.alb_config.acm_certificate_arn
 }
 
+locals {
+  final_eks_config = merge(
+    var.eks_config,  # from dev.tfvars: name, version, region
+    {
+      vpc_id          = module.vpc.vpc_id
+      subnet_ids      = module.vpc.private_subnet_ids
+      role_arn        = aws_iam_role.eks_cluster_role.arn
+      node_role_arn   = aws_iam_role.eks_node_role.arn
+      bastion_ip      = module.bastion.bastion_ip
+    }
+  )
+}
+
 module "eks" {
   source = "./modules/eks"
 
-  eks_config = local.final_eks_config
-  role_arn        = aws_iam_role.eks_cluster_role.arn  # Pass the created role here
-  node_role_arn   = aws_iam_role.eks_node_role.arn
-  
-}
-
-locals {
-  final_eks_config = merge(
-    var.eks_config,
-    {
-      vpc_id        = module.vpc.vpc_id
-      subnet_ids    = module.vpc.private_subnet_ids
-      bastion_config = {
-        enabled   = true
-        ip        = module.bastion.bastion_ip
-        key_name  = module.bastion.key_name
-      }
-    }
-  )
+  name            = local.final_eks_config.name
+  cluster_version = local.final_eks_config.version
+  region          = local.final_eks_config.region
+  vpc_id          = local.final_eks_config.vpc_id
+  subnet_ids      = local.final_eks_config.subnet_ids
+  role_arn        = local.final_eks_config.role_arn
+  node_role_arn   = local.final_eks_config.node_role_arn
+  bastion_ip      = local.final_eks_config.bastion_ip
 }
 
 
