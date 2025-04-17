@@ -6,7 +6,7 @@ resource "helm_release" "aws_lb_controller" {
 
   set {
     name  = "clusterName"
-    value = aws_eks_cluster.this.cluster_name
+    value = aws_eks_cluster.this.name
   }
 
   set {
