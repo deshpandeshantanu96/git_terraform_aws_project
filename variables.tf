@@ -33,7 +33,7 @@ variable "eks_config" {
   })
 
   validation {
-    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]{0,99}$", var.eks_config.name))
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]{0,99}$", var.eks_config.cluster_name))
     error_message = "EKS cluster name must be 1-100 characters long, start with a letter, and can contain only alphanumeric characters and hyphens."
   }
 }
