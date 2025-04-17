@@ -37,7 +37,7 @@ locals {
 module "eks" {
   source = "./modules/eks"
 
-  name            = local.final_eks_config.name
+  cluster_name    = local.final_eks_config.name
   cluster_version = local.final_eks_config.version
   region          = local.final_eks_config.region
   vpc_id          = local.final_eks_config.vpc_id
