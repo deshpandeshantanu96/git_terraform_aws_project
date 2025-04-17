@@ -30,3 +30,9 @@ variable "cluster_version" {
   type        = string
   default     = "1.29" # or whatever latest
 }
+
+variable "role_arn" {
+  description = "IAM Role ARN for the EKS Cluster"
+  type        = string
+}
+

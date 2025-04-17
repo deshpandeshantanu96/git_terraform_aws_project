@@ -30,4 +30,28 @@ module "eks" {
   subnet_ids      = var.eks_config.subnet_ids
   region          = var.eks_config.region
   bastion_ip      = module.bastion.bastion_public_ip
+  role_arn        = aws_iam_role.eks_cluster_role.arn  # Pass the created role here
 }
+
+resource "aws_iam_role" "eks_cluster_role" {
+  name = "eks-cluster-role"
+
+  assume_role_policy = data.aws_iam_policy_document.eks_assume_role_policy.json
+}
+
+data "aws_iam_policy_document" "eks_assume_role_policy" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["eks.amazonaws.com"]
+    }
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
+  role       = aws_iam_role.eks_cluster_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
