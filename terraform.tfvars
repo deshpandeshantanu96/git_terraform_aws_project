@@ -15,7 +15,7 @@ alb_config = {
 }
 
 eks_config = {
-  cluster_name    = "dev-eks-cluster"
+  cluster_name    = "dev-eks-cluster-1"
   cluster_version = "1.29"
   region          = "us-east-1"
 }
