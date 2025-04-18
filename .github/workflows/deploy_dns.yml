@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download Terraform Outputs
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           name: terraform-outputs
           path: ./  # download to workspace root

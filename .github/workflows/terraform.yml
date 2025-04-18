@@ -49,7 +49,7 @@ jobs:
         run: terraform output -json > terraform_outputs.json
 
       - name: Upload Terraform Outputs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: terraform-outputs
           path: terraform_outputs.json
