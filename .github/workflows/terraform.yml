@@ -52,4 +52,4 @@ jobs:
       AWS_DEFAULT_REGION: us-east-1
     secrets: inherit
 
-#Step 2
+#Step 4
