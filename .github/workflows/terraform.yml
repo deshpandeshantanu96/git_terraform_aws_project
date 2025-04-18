@@ -44,9 +44,16 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -input=false
-        
+
       - name: Export Terraform Outputs
         run: terraform output -json > terraform_outputs.json
+
+      - name: Upload Terraform Outputs
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-outputs
+          path: terraform_outputs.json
+
 
 
   dns_setup:
@@ -56,4 +63,4 @@ jobs:
       AWS_DEFAULT_REGION: us-east-1
     secrets: inherit
 
-#Step 4
+#Step 5
