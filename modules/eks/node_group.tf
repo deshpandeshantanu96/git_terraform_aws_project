@@ -9,4 +9,8 @@ resource "aws_eks_node_group" "this" {
     max_size     = 4
     min_size     = 1
   }
+
+  remote_access {
+    ec2_ssh_key = "terraform_application_key" # Must exist in AWS
+  }
 }
