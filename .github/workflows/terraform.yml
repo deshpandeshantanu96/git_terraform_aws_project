@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  actions: read  # Added for artifact sharing
 
 jobs:
   terraform:
@@ -55,7 +56,7 @@ jobs:
           path: terraform_outputs.json
 
   dns_setup:
-    needs: terraform  # This should be only once, at the job level
+    needs: terraform
     uses: ./.github/workflows/deploy_dns.yml
     with:
       AWS_DEFAULT_REGION: us-east-1
