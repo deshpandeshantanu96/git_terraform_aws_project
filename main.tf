@@ -34,6 +34,26 @@ locals {
   )
 }
 
+resource "aws_security_group" "internal_lb_sg" {
+  name        = "internal-lb-sg"
+  description = "Security Group for Internal Load Balancer"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]  # your VPC CIDR
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 module "eks" {
   source = "./modules/eks"
 

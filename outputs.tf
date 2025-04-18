@@ -3,6 +3,10 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
+output "internal_lb_sg_id" {
+  value = aws_security_group.internal_lb_sg.id
+}
+
 output "public_subnet_ids" {
   description = "Public subnet IDs created by the vpc module"
   value       = module.vpc.public_subnet_ids

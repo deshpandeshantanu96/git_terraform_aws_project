@@ -44,6 +44,10 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -input=false
+        
+      - name: Export Terraform Outputs
+        run: terraform output -json > terraform_outputs.json
+
 
   dns_setup:
     needs: terraform

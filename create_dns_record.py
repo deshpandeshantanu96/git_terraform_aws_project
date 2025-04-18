@@ -2,6 +2,7 @@ import boto3
 import time
 import logging
 from typing import Optional  # Import Optional for type hints
+import json
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -126,6 +127,14 @@ class DNSManager:
         except Exception as e:
             logger.error(f"Failed to create DNS record: {e}")
             raise
+
+    def load_terraform_outputs(file_path="terraform_outputs.json"):
+        with open(file_path, "r") as f:
+            outputs = json.load(f)
+        vpc_id = outputs["vpc_id"]["value"]
+        subnet_ids = outputs["private_subnet_ids"]["value"]
+        security_group_id = outputs["internal_lb_sg_id"]["value"]
+        return vpc_id, subnet_ids, security_group_id
 
 
 
