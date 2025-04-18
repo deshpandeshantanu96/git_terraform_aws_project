@@ -37,7 +37,7 @@ locals {
 resource "aws_security_group" "internal_lb_sg" {
   name        = "internal-lb-sg"
   description = "Security Group for Internal Load Balancer"
-  vpc_id      = aws_vpc.main.id
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
     from_port   = 80
