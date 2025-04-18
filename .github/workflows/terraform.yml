@@ -49,27 +49,14 @@ jobs:
         run: terraform output -json > terraform_outputs.json
 
       - name: Upload Terraform Outputs
-        id: upload
         uses: actions/upload-artifact@v3
         with:
           name: terraform-outputs
           path: terraform_outputs.json
 
-
   dns_setup:
-    needs: terraform  # This ensures proper ordering
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download Terraform Outputs
-        uses: actions/download-artifact@v3
-        with:
-          name: terraform-outputs
-          path: ./
-
-    needs: terraform
+    needs: terraform  # This should be only once, at the job level
     uses: ./.github/workflows/deploy_dns.yml
     with:
       AWS_DEFAULT_REGION: us-east-1
     secrets: inherit
-
-#Step 7
