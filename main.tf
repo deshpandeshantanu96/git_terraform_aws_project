@@ -29,7 +29,7 @@ module "rds" {
   db_password       = var.rds_config.db_password
   db_name           = var.rds_config.db_name
   db_instance_class = var.rds_config.db_instance_class
-  subnet_ids        = var.rds_config.subnet_ids
+  subnet_ids        = module.vpc.private_subnet_ids
   vpc_cidr          = var.rds_config.vpc_cidr
 }
 
