@@ -136,8 +136,6 @@ class DNSManager:
         security_group_id = outputs["internal_lb_sg_id"]["value"]
         return vpc_id, subnet_ids, security_group_id
 
-
-
 def main():
     try:
         # Initialize DNSManager
@@ -145,10 +143,10 @@ def main():
         
         # Configuration
         domain_name = "service.dns_zone.internal"
-        vpc_id = "vpc-07281342a2b001221"  # Your VPC ID
+        vpc_id = manager.load_terraform_outputs[0]  # Your VPC ID
         lb_name_pattern = "app"  # Pattern to match internal LB name
-        subnet_ids = ['subnet-08db0b7801dd94566', 'subnet-06b342bdcd743e7f6']  # Replace with your actual subnet IDs
-        security_group_ids = ['sg-0fe37db049ea690a5']  # Replace with your security group ID
+        subnet_ids = manager.load_terraform_outputs[1]  # Replace with your actual subnet IDs
+        security_group_ids = manager.load_terraform_outputs[2]  # Replace with your security group ID
         
         logger.info(f"Starting DNS setup in region {manager.region}")
         

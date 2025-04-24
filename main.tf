@@ -21,6 +21,18 @@ module "alb" {
   certificate_arn   = var.alb_config.acm_certificate_arn
 }
 
+module "rds" {
+  source = "./modules/rds"
+
+  db_username       = var.rds_config.db_username
+  db_password       = var.rds_config.db_password
+  db_name           = var.rds_config.db_name
+  db_instance_class = var.rds_config.db_instance_class
+  subnet_ids        = var.rds_config.subnet_ids
+  vpc_cidr          = var.rds_config.vpc_cidr
+}
+
+
 locals {
   final_eks_config = merge(
     var.eks_config,  # from dev.tfvars: name, version, region
@@ -39,7 +51,7 @@ resource "aws_security_group" "internal_lb_sg" {
   description = "Security Group for Internal Load Balancer"
   vpc_id      = module.vpc.vpc_id
 
-  ingress {
+  ingress {AmazonEKSWorkerNodePolicy
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"

@@ -37,3 +37,15 @@ variable "eks_config" {
     error_message = "EKS cluster name must be 1-100 characters long, start with a letter, and can contain only alphanumeric characters and hyphens."
   }
 }
+
+variable "rds_config" {
+  description = "Configuration for RDS module"
+  type = object({
+    db_username        = string
+    db_password        = string
+    db_name            = string
+    db_instance_class  = string
+    subnet_ids         = list(string)
+    vpc_cidr           = list(string)
+  })
+}

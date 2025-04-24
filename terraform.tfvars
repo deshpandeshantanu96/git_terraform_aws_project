@@ -19,3 +19,12 @@ eks_config = {
   cluster_version = "1.29"
   region          = "us-east-1"
 }
+
+rds_config = {
+  db_username       = "adminuser"
+  db_password       = "StrongPassword123"
+  db_name           = "testdb"
+  db_instance_class = "db.t3.micro"
+  subnet_ids        = ["subnet-abc123", "subnet-def456"]
+  vpc_cidr          = ["0.0.0.0/0"]
+}
