@@ -10,6 +10,7 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 resource "aws_security_group" "rds_sg" {
   name        = "rds-sg"
   description = "Allow MySQL access"
+  vpc_id      = var.vpc_id 
 
   ingress {
     from_port   = 3306
