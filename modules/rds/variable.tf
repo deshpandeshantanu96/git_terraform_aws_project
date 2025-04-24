@@ -1,3 +1,8 @@
+variable "vpc_id" {
+  description = "The VPC ID where the security group should be created"
+  type        = string
+}
+
 variable "db_username" {
   description = "Master username for RDS"
   type        = string
