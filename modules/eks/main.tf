@@ -10,8 +10,6 @@ resource "aws_eks_cluster" "this" {
     endpoint_private_access = true
     endpoint_public_access  = true
   }
-
-  tags = var.eks_config.tags
 }
 
 # Cluster IAM Role
@@ -59,8 +57,6 @@ resource "aws_eks_node_group" "this" {
     max_size     = var.max_size
     min_size     = var.min_size
   }
-
-  tags = var.eks_config.tags
 
   depends_on = [
     aws_iam_role_policy_attachment.nodes_AmazonEKSWorkerNodePolicy,
