@@ -62,7 +62,6 @@ module "eks" {
   subnet_ids      = module.vpc.private_subnet_ids
   node_group_config = var.node_group_config
   lb_controller_config = var.lb_controller_config
-  role_arn        = aws_iam_role.eks_role.arn
 }
 
 
