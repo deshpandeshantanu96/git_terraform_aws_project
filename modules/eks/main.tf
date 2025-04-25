@@ -18,7 +18,7 @@ resource "aws_iam_role_policy_attachment" "eks_role_policy_attachment" {
 }
 
 resource "aws_eks_cluster" "this" {
-  name     = var.eks_config.cluster_name
+  name     = var.cluster_name
   role_arn = var.role_arn
 
   vpc_config {
@@ -26,7 +26,7 @@ resource "aws_eks_cluster" "this" {
     endpoint_public_access = true
   }
 
-  version = var.eks_config.cluster_version
+  version = var.cluster_version
 
   depends_on = [
     aws_iam_role_policy_attachment.eks_role_policy_attachment

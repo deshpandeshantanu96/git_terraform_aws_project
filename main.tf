@@ -33,20 +33,6 @@ module "rds" {
   vpc_cidr          = var.rds_config.vpc_cidr
 }
 
-
-locals {
-  final_eks_config = merge(
-    var.eks_config,  # from dev.tfvars: name, version, region
-    {
-      vpc_id          = module.vpc.vpc_id
-      subnet_ids      = module.vpc.private_subnet_ids
-      role_arn        = aws_iam_role.eks_cluster_role.arn
-      node_role_arn   = aws_iam_role.eks_node_role.arn
-      bastion_ip      = module.bastion.bastion_public_ip
-    }
-  )
-}
-
 resource "aws_security_group" "internal_lb_sg" {
   name        = "internal-lb-sg"
   description = "Security Group for Internal Load Balancer"
@@ -76,6 +62,7 @@ module "eks" {
   subnet_ids      = module.vpc.private_subnet_ids
   node_group_config = var.node_group_config
   lb_controller_config = var.lb_controller_config
+  role_arn        = aws_iam_role.eks_role.arn
 }
 
 
