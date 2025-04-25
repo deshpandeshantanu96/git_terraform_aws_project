@@ -73,7 +73,7 @@ module "eks" {
   cluster_version = var.eks_config.cluster_version
   region          = var.eks_config.region
   vpc_id          = module.vpc.vpc_id
-  subnet_ids      = module.vpc.subnet_ids
+  subnet_ids      = module.vpc.private_subnet_ids
   node_group_config = var.node_group_config
   lb_controller_config = var.lb_controller_config
 }
