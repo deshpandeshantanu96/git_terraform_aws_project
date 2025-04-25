@@ -48,14 +48,14 @@ resource "aws_eks_node_group" "this" {
   node_group_name = each.key
   node_role_arn   = aws_iam_role.nodes.arn
   subnet_ids      = var.subnet_ids
-  ami_type        = var.ami_type
-  instance_types  = var.instance_types
-  disk_size       = var.disk_size
+  ami_type        = var.node_groups.ami_type
+  instance_types  = var.node_groups.instance_types
+  disk_size       = var.node_groups.disk_size
 
   scaling_config {
-    desired_size = var.desired_size
-    max_size     = var.max_size
-    min_size     = var.min_size
+    desired_size = var.node_groups.desired_size
+    max_size     = var.node_groups.max_size
+    min_size     = var.node_groups.min_size
   }
 
   depends_on = [
