@@ -14,27 +14,40 @@ alb_config = {
   acm_certificate_arn = "arn:aws:acm:us-east-1:445567099825:certificate/c7f40eaf-0ffc-4b11-bd65-b62860e1d853"
 }
 
-eks_config = {
-  cluster_name    = "my-eks-cluster"
-  cluster_version = "1.27"
-  vpc_id          = "vpc-12345678"
-  subnet_ids      = ["subnet-12345678", "subnet-87654321", "subnet-13579246"]
-  
-  node_groups = {
-    primary = {
-      ami_type       = "AL2_x86_64"
-      instance_types = ["t3.medium"]
-      desired_size   = 2
-      max_size       = 3
-      min_size       = 1
-    }
-  }
-}
-
 rds_config = {
   db_username       = "adminuser"
   db_password       = "StrongPassword123"
   db_name           = "testdb"
   db_instance_class = "db.t3.micro"
   vpc_cidr          = ["0.0.0.0/0"]
+}
+
+eks_config = {
+  cluster_name    = "my-eks-cluster"
+  cluster_version = "1.27"
+  region          = "us-east-1"
+
+  node_groups = {
+    primary = {
+      ami_type       = "AL2_x86_64"
+      instance_types = ["t3.medium"]
+      desired_size   = 1
+      max_size       = 2
+      min_size       = 1
+      disk_size      = 20
+    }
+    spot = {
+      ami_type       = "AL2_x86_64"
+      instance_types = ["t3.medium", "t3.large"]
+      desired_size   = 1
+      max_size       = 3
+      min_size       = 1
+      disk_size      = 20
+    }
+  }
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
 }

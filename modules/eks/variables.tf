@@ -79,14 +79,12 @@ variable "node_groups" {
   description = "Map of node group configurations to create"
   type = map(object({
     ami_type               = string
-    capacity_type          = string
     disk_size              = number
     instance_types         = list(string)
     desired_size           = number
     max_size               = number
     min_size               = number
-    update_max_unavailable = number
-    labels                 = map(string)
+
   }))
   default = {}
 }

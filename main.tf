@@ -56,18 +56,18 @@ resource "aws_security_group" "internal_lb_sg" {
 module "eks" {
   source = "./modules/eks"
 
-  # Cluster configuration
-  cluster_name    = eks_config.cluster_name
-  cluster_version = eks_config.cluster_version
-  vpc_id          = eks_config.vpc_id
-  subnet_ids      = eks_config.subnet_ids
-
-  # Node Groups
-  node_groups = eks_config.node_groups
-
-  # Tags
-  tags = merge(global_config.tags, {
-    Environment = global_config.environment
-    Terraform   = "true"
-  })
+  cluster_name    = var.eks_config.cluster_name
+  cluster_version = var.eks_config.cluster_version
+  region          = var.eks_config.region
+  node_groups = map(object(
+    {
+    ami_type       = var.eks_config.ami_type
+    instance_types = var.eks_config.instance_types
+    desired_size   = var.eks_config.desired_size
+    max_size       = var.eks_config.max_size
+    min_size       = var.eks_config.min_size
+    disk_size      = var.eks_config.disk_size
+    }
+    )
+  )
 }
