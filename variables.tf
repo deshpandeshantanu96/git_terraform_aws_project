@@ -46,6 +46,7 @@ variable "eks_config" {
       max_size       = number
       min_size       = number
       disk_size      = number
+      capacity_type  = string
     }))
     tags = optional(map(string), {})
   })
