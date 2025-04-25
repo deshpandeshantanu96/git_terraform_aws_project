@@ -62,29 +62,27 @@ module "eks" {
   subnet_ids      = module.vpc.private_subnet_ids
   node_group_config = var.node_group_config
   lb_controller_config = var.lb_controller_config
+  role_arn        = aws_iam_role.eks_role.arn
 }
 
 
-resource "aws_iam_role" "eks_cluster_role" {
+resource "aws_iam_role" "eks_role" {
   name = "eks-cluster-role"
-
-  assume_role_policy = data.aws_iam_policy_document.eks_assume_role_policy.json
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Action    = "sts:AssumeRole"
+      Principal = {
+        Service = "eks.amazonaws.com"
+      }
+    }]
+  })
 }
 
-data "aws_iam_policy_document" "eks_assume_role_policy" {
-  statement {
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["eks.amazonaws.com"]
-    }
-    actions = ["sts:AssumeRole"]
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
-  role       = aws_iam_role.eks_cluster_role.name
+resource "aws_iam_role_policy_attachment" "eks_role_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+  role       = aws_iam_role.eks_role.name
 }
 
 resource "aws_iam_role" "eks_node_role" {
