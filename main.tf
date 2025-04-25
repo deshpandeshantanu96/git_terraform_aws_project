@@ -60,15 +60,16 @@ module "eks" {
   vpc_id          = module.vpc.vpc_id
   cluster_name    = var.eks_config.cluster_name
   cluster_version = var.eks_config.cluster_version
-  node_groups = map(object(
-    {
-    ami_type       = var.eks_config.ami_type
-    instance_types = var.eks_config.instance_types
-    desired_size   = var.eks_config.desired_size
-    max_size       = var.eks_config.max_size
-    min_size       = var.eks_config.min_size
-    disk_size      = var.eks_config.disk_size
+  
+  node_groups = {
+    primary = {
+      ami_type       = var.eks_config.ami_type
+      instance_types = var.eks_config.instance_types
+      desired_size   = var.eks_config.desired_size
+      max_size       = var.eks_config.max_size
+      min_size       = var.eks_config.min_size
+      disk_size      = var.eks_config.disk_size
+      capacity_type  = "ON_DEMAND"  # Added required field
     }
-    )
-  )
+  }
 }
