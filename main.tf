@@ -57,21 +57,21 @@ module "eks" {
   source = "./modules/eks"
 
   # Basic cluster config
-  cluster_name    = var.cluster_name
-  cluster_version = var.cluster_version
-  vpc_id          = var.vpc_id
-  subnet_ids      = var.subnet_ids
+  cluster_name    = var.eks_config.cluster_name
+  cluster_version = var.eks_config.cluster_version
+  vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.private_subnet_ids
   
   # Node groups config (properly nested)
   node_groups = {
     primary = {
-      ami_type       = var.ami_type
-      instance_types = var.instance_types
-      desired_size   = var.desired_size
-      max_size       = var.max_size
-      min_size       = var.min_size
-      disk_size      = var.disk_size
-      capacity_type  = var.capacity_type
+      ami_type       = var.eks_config.ami_type
+      instance_types = var.eks_config.instance_types
+      desired_size   = var.eks_config.desired_size
+      max_size       = var.eks_config.max_size
+      min_size       = var.eks_config.min_size
+      disk_size      = var.eks_config.disk_size
+      capacity_type  = var.eks_config.capacity_type
     }
   }
 }
