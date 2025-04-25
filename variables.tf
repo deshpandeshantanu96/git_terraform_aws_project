@@ -47,4 +47,5 @@ variable "eks_config" {
     disk_size      = number
     capacity_type  = string
   })
+  tags = list(string)
 }
