@@ -5,8 +5,8 @@ resource "aws_eks_node_group" "this" {
   node_group_name = "${var.cluster_name}-node-group"
   node_role_arn   = var.node_role_arn
   subnet_ids      = var.subnet_ids
-  instance_types  = ["t2.medium"]
-  
+  ami_type = "AL2_x86_64"  # Specify the EKS-optimized AMI for x86_64 architecture
+  instance_type = "t3.medium"  
   # Attach the node security group
   remote_access {
     ec2_ssh_key = "terraform_application_key"
