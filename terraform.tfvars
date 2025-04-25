@@ -20,12 +20,16 @@ rds_config = {
   db_name           = "testdb"
   db_instance_class = "db.t3.micro"
   vpc_cidr          = ["0.0.0.0/0"]
+  vpc_id            = "vpc-12345678"       # Your existing VPC ID
+  subnet_ids        = ["subnet-123456", "subnet-654321"]
 }
 
 eks_config = {
   cluster_name    = "my-eks-cluster"
   cluster_version = "1.27"
   region          = "us-east-1"
+  vpc_id          = "vpc-12345678"       # Must match RDS VPC if they need to communicate
+  private_subnets = ["subnet-123456", "subnet-654321"]
 
   node_groups = {
     primary = {
