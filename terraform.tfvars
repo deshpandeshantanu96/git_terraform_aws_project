@@ -15,23 +15,20 @@ alb_config = {
 }
 
 eks_config = {
-  cluster_name    = "dev-eks-cluster-2"
-  cluster_version = "1.29"
-  region          = "us-east-1"
-}
-
-node_group_config = {
-  instance_type      = "t3.medium"
-  desired_capacity   = 2
-  max_capacity       = 3
-  min_capacity       = 1
-  ami_type           = "AL2_x86_64"
-  key_pair           = "terraform_application_key"   # Replace with your SSH key name if necessary
-}
-
-lb_controller_config = {
-  enable_controller   = true
-  service_account_name = "aws-load-balancer-controller"
+  cluster_name    = "my-eks-cluster"
+  cluster_version = "1.27"
+  vpc_id          = "vpc-12345678"
+  subnet_ids      = ["subnet-12345678", "subnet-87654321", "subnet-13579246"]
+  
+  node_groups = {
+    primary = {
+      ami_type       = "AL2_x86_64"
+      instance_types = ["t3.medium"]
+      desired_size   = 2
+      max_size       = 3
+      min_size       = 1
+    }
+  }
 }
 
 rds_config = {
