@@ -74,6 +74,4 @@ module "eks" {
       capacity_type  = var.capacity_type
     }
   }
-  
-  tags = var.tags
 }
