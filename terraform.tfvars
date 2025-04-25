@@ -28,12 +28,13 @@ eks_config = {
   cluster_name    = "my-eks-cluster"
   cluster_version = "1.27"
   region          = "us-east-1"
-  vpc_id          = "vpc-12345678"       # Must match RDS VPC if they need to communicate
+  vpc_id          = "vpc-12345678"
   private_subnets = ["subnet-123456", "subnet-654321"]
 
   node_groups = {
     primary = {
       ami_type       = "AL2_x86_64"
+      capacity_type  = "ON_DEMAND"  # <-- THIS WAS MISSING
       instance_types = ["t3.medium"]
       desired_size   = 1
       max_size       = 2
@@ -42,6 +43,7 @@ eks_config = {
     }
     spot = {
       ami_type       = "AL2_x86_64"
+      capacity_type  = "SPOT"      # <-- THIS WAS MISSING
       instance_types = ["t3.medium", "t3.large"]
       desired_size   = 1
       max_size       = 3
