@@ -39,7 +39,6 @@ variable "eks_config" {
   type = object({
     cluster_name    = string
     cluster_version = string
-    region          = string
     node_groups = map(object({
       ami_type       = string
       instance_types = list(string)

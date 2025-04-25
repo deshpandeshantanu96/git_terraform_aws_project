@@ -60,7 +60,6 @@ module "eks" {
   vpc_id          = module.vpc.vpc_id
   cluster_name    = var.eks_config.cluster_name
   cluster_version = var.eks_config.cluster_version
-  region          = var.eks_config.region
   node_groups = map(object(
     {
     ami_type       = var.eks_config.ami_type
