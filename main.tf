@@ -71,6 +71,7 @@ module "eks" {
   source          = "./modules/eks"
   cluster_name    = var.eks_config.cluster_name
   cluster_version = var.eks_config.cluster_version
+  region          = var.eks_config.region
   vpc_id          = var.vpc_config.vpc_id
   subnet_ids      = var.vpc_config.subnet_ids
   node_group_config = var.node_group_config
