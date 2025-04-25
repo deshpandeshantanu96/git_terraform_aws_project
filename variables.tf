@@ -35,19 +35,16 @@ variable "rds_config" {
 }
 
 variable "eks_config" {
-  description = "Configuration for EKS cluster"
+  description = "Configuration for eks module"
   type = object({
     cluster_name    = string
     cluster_version = string
-    node_groups = map(object({
-      ami_type       = string
-      instance_types = list(string)
-      desired_size   = number
-      max_size       = number
-      min_size       = number
-      disk_size      = number
-      capacity_type  = string
-    }))
-    tags = optional(map(string), {})
+    ami_type       = string
+    instance_types = list(string)
+    desired_size   = number
+    max_size       = number
+    min_size       = number
+    disk_size      = number
+    capacity_type  = string
   })
 }
