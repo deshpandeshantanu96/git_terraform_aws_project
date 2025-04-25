@@ -24,18 +24,40 @@ variable "alb_config" {
 
 
 # Basic EKS Config (only few fields manually from tfvars)
+# variables.tf (Root Level)
+
 variable "eks_config" {
   description = "Base configuration for the EKS Cluster. Full config is completed using outputs in locals."
   type = object({
     cluster_name    = string
     cluster_version = string
-    region  = string
+    region          = string
   })
 
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]{0,99}$", var.eks_config.cluster_name))
     error_message = "EKS cluster name must be 1-100 characters long, start with a letter, and can contain only alphanumeric characters and hyphens."
   }
+}
+
+variable "node_group_config" {
+  description = "Node group configuration"
+  type = object({
+    instance_type    = string
+    desired_capacity = number
+    max_capacity     = number
+    min_capacity     = number
+    ami_type         = string
+    key_pair         = string
+  })
+}
+
+variable "lb_controller_config" {
+  description = "Load Balancer Controller configuration"
+  type = object({
+    enable_controller   = bool
+    service_account_name = string
+  })
 }
 
 variable "rds_config" {

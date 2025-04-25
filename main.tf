@@ -68,16 +68,13 @@ resource "aws_security_group" "internal_lb_sg" {
 }
 
 module "eks" {
-  source = "./modules/eks"
-
-  cluster_name    = local.final_eks_config.cluster_name
-  cluster_version = local.final_eks_config.cluster_version
-  region          = local.final_eks_config.region
-  vpc_id          = local.final_eks_config.vpc_id
-  subnet_ids      = local.final_eks_config.subnet_ids
-  role_arn        = local.final_eks_config.role_arn
-  node_role_arn   = local.final_eks_config.node_role_arn
-  bastion_ip      = local.final_eks_config.bastion_ip
+  source          = "./modules/eks"
+  cluster_name    = var.eks_config.cluster_name
+  cluster_version = var.eks_config.cluster_version
+  vpc_id          = var.vpc_config.vpc_id
+  subnet_ids      = var.vpc_config.subnet_ids
+  node_group_config = var.node_group_config
+  lb_controller_config = var.lb_controller_config
 }
 
 

@@ -20,11 +20,24 @@ eks_config = {
   region          = "us-east-1"
 }
 
+node_group_config = {
+  instance_type      = "t3.medium"
+  desired_capacity   = 2
+  max_capacity       = 3
+  min_capacity       = 1
+  ami_type           = "AL2_x86_64"
+  key_pair           = "terraform_application_key"   # Replace with your SSH key name if necessary
+}
+
+lb_controller_config = {
+  enable_controller   = true
+  service_account_name = "aws-load-balancer-controller"
+}
+
 rds_config = {
   db_username       = "adminuser"
   db_password       = "StrongPassword123"
   db_name           = "testdb"
   db_instance_class = "db.t3.micro"
-  subnet_ids        = ["subnet-abc123", "subnet-def456"]
   vpc_cidr          = ["0.0.0.0/0"]
 }
