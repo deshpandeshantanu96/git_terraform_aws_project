@@ -14,13 +14,6 @@ resource "aws_eks_cluster" "this" {
     aws_iam_role_policy_attachment.cluster_AmazonEKSClusterPolicy,
     aws_iam_role_policy_attachment.cluster_AmazonEKSServicePolicy,
   ]
-
-  tags = merge(
-    var.tags,
-    {
-      Name = var.cluster_name
-    }
-  )
 }
 
 resource "aws_eks_addon" "core_addons" {
