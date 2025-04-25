@@ -56,6 +56,8 @@ resource "aws_security_group" "internal_lb_sg" {
 module "eks" {
   source = "./modules/eks"
 
+  subnet_ids      = module.vpc.private_subnet_ids
+  vpc_id          = module.vpc.vpc_id
   cluster_name    = var.eks_config.cluster_name
   cluster_version = var.eks_config.cluster_version
   region          = var.eks_config.region
