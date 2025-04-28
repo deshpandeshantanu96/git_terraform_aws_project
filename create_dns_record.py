@@ -128,13 +128,58 @@ class DNSManager:
             logger.error(f"Failed to create DNS record: {e}")
             raise
 
+    def clean_terraform_json_file(file_path):
+        with open(file_path, 'r') as f:
+            lines = f.readlines()
+        
+        # Filter out debug and command lines
+        clean_lines = [line for line in lines 
+                    if not line.startswith('::debug::') 
+                    and not line.startswith('[command]')]
+        
+        # Find JSON content
+        json_str = ''.join(clean_lines)
+        json_start = json_str.find('{')
+        json_end = json_str.rfind('}') + 1
+        
+        if json_start == -1 or json_end == 0:
+            raise ValueError("No JSON content found")
+        
+        json_str = json_str[json_start:json_end]
+        
+        # Validate and rewrite
+        data = json.loads(json_str)
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=2)
+        
+        return data
+
     def load_terraform_outputs(self, file_path="terraform_outputs.json"):
-        with open(file_path, "r") as f:
-            outputs = json.load(f)
-        vpc_id = outputs["vpc_id"]["value"]
-        subnet_ids = outputs["private_subnet_ids"]["value"]
-        security_group_id = outputs["internal_lb_sg_id"]["value"]
-        return vpc_id, subnet_ids, security_group_id
+        """
+        Loads and cleans Terraform outputs, then extracts specific values.
+    
+        Args:
+        file_path (str): Path to the Terraform outputs JSON file
+        
+        Returns:
+        tuple: (vpc_id, subnet_ids, security_group_id)
+        """
+        try:
+            # First clean the JSON file
+            cleaned_data = clean_terraform_json_file(file_path)
+            
+            # Extract required values
+            vpc_id = cleaned_data["vpc_id"]["value"]
+            subnet_ids = cleaned_data["private_subnet_ids"]["value"]
+            security_group_id = cleaned_data["internal_lb_sg_id"]["value"]
+            
+            return vpc_id, subnet_ids, security_group_id
+            
+        except KeyError as e:
+            raise KeyError(f"Missing expected key in Terraform outputs: {str(e)}")
+        except Exception as e:
+            raise Exception(f"Failed to load Terraform outputs: {str(e)}")
+
 
 def main():
     try:
