@@ -63,3 +63,28 @@ resource "aws_route_table_association" "public" {
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
+
+resource "aws_eip" "nat" {
+  vpc = true
+}
+
+resource "aws_nat_gateway" "this" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = module.vpc.public_subnets[0] # Place in first public subnet
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = module.vpc.vpc_id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.this.id
+  }
+}
+
+resource "aws_route_table_association" "private" {
+  count          = length(module.vpc.private_subnets)
+  subnet_id      = module.vpc.private_subnets[count.index]
+  route_table_id = aws_route_table.private.id
+}
+
