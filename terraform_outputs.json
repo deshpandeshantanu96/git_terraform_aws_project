@@ -6,7 +6,7 @@
       "value": ["subnet-092592a1b824b0ed6", "subnet-0feb076199bc753c9"]
     },
     "internal_lb_sg_id": {
-      "value": "sg-0cc960c2dfe88722d"
+      "value": ["sg-0cc960c2dfe88722d"]
     }
   }
   
