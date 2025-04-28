@@ -152,7 +152,30 @@ resource "aws_lb_listener" "http" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "nodes_AmazonEKSLoadBalancerControllerPolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AWSLoadBalancerControllerIAMPolicy"
-  role       = aws_iam_role.nodes.name
+resource "aws_iam_policy" "lb_controller" {
+  name        = "AWSLoadBalancerControllerIAMPolicy-Minimal"
+  description = "Minimal policy for AWS LB Controller"
+  policy      = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ec2:Describe*",
+          "elasticloadbalancing:*",
+          "iam:CreateServiceLinkedRole",
+          "cognito-idp:DescribeUserPoolClient",
+          "acm:DescribeCertificate",
+          "acm:ListCertificates",
+          "wafv2:GetWebACL"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lb_controller" {
+  role       = aws_iam_role.eks_nodes.name
+  policy_arn = aws_iam_policy.lb_controller.arn
 }
