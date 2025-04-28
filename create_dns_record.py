@@ -166,7 +166,7 @@ class DNSManager:
         """
         try:
             # First clean the JSON file
-            cleaned_data = DNSManager.clean_terraform_json_file(file_path)
+            cleaned_data = DNSManager.clean_terraform_json_file(self, file_path)
             
             # Extract required values
             vpc_id = cleaned_data["vpc_id"]["value"]
