@@ -153,6 +153,6 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_iam_role_policy_attachment" "nodes_AmazonEKSLoadBalancerControllerPolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSLoadBalancerControllerPolicy"
+  policy_arn = "arn:aws:iam::aws:policy/AWSLoadBalancerControllerIAMPolicy"
   role       = aws_iam_role.nodes.name
 }
