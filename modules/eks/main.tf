@@ -189,7 +189,8 @@ resource "aws_iam_policy" "create_policy_permission" {
     Statement = [
       {
         Effect   = "Allow"
-        Action   = "iam:CreatePolicy"
+        Action   : ["iam:CreatePolicy",
+                "iam:AttachRolePolicy"],
         Resource = "*"
       }
     ]
