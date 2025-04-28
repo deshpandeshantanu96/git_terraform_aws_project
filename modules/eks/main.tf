@@ -176,6 +176,6 @@ resource "aws_iam_policy" "lb_controller" {
 }
 
 resource "aws_iam_role_policy_attachment" "lb_controller" {
-  role       = aws_iam_role.eks_nodes.name
+  role       = aws_iam_role.nodes.name
   policy_arn = aws_iam_policy.lb_controller.arn
 }
