@@ -1,0 +1,31 @@
+name: Deploy DNS Setup
+
+on:
+  push:
+    branches:
+      - main  # Trigger when pushing to the 'main' branch
+
+jobs:
+  setup_dns:
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'  # Use Python 3.x
+
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install boto3  # Install AWS SDK for Python (Boto3)
+    - name: Run Python script to create DNS record
+      run: |
+        python create_dns_record.py  # Path to your Python script
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Set AWS keys securely
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-east-1  # Set the AWS region
