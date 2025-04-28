@@ -1,7 +1,7 @@
 import boto3
 import time
 import logging
-from typing import Optional  # Import Optional for type hints
+from typing import Optional
 import json
 
 # Set up logging
@@ -128,7 +128,7 @@ class DNSManager:
             logger.error(f"Failed to create DNS record: {e}")
             raise
 
-    def load_terraform_outputs(file_path="terraform_outputs.json"):
+    def load_terraform_outputs(self, file_path="terraform_outputs.json"):
         with open(file_path, "r") as f:
             outputs = json.load(f)
         vpc_id = outputs["vpc_id"]["value"]
@@ -143,10 +143,9 @@ def main():
         
         # Configuration
         domain_name = "service.dns_zone.internal"
-        vpc_id = manager.load_terraform_outputs[0]  # Your VPC ID
+        vpc_id, subnet_ids, security_group_ids = manager.load_terraform_outputs()  # Corrected method call
+        
         lb_name_pattern = "app"  # Pattern to match internal LB name
-        subnet_ids = manager.load_terraform_outputs[1]  # Replace with your actual subnet IDs
-        security_group_ids = manager.load_terraform_outputs[2]  # Replace with your security group ID
         
         logger.info(f"Starting DNS setup in region {manager.region}")
         
@@ -174,4 +173,3 @@ def main():
 
 if __name__ == "__main__":
     exit(main())
-
