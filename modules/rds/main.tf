@@ -1,4 +1,4 @@
-resource "aws_db_subnet_group" "rds_subnet_group" {
+resource "aws_db_subnet_group" "rds_subnet_group_aws" {
   name       = "rds-subnet-group"
   subnet_ids = var.subnet_ids
 
