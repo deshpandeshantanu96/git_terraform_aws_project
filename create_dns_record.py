@@ -128,7 +128,7 @@ class DNSManager:
             logger.error(f"Failed to create DNS record: {e}")
             raise
 
-    def clean_terraform_json_file(file_path):
+    def clean_terraform_json_file(self, file_path):
         with open(file_path, 'r') as f:
             lines = f.readlines()
         
@@ -166,7 +166,7 @@ class DNSManager:
         """
         try:
             # First clean the JSON file
-            cleaned_data = clean_terraform_json_file(file_path)
+            cleaned_data = DNSManager.clean_terraform_json_file(file_path)
             
             # Extract required values
             vpc_id = cleaned_data["vpc_id"]["value"]
