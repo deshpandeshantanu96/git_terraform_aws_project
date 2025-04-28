@@ -118,7 +118,7 @@ resource "aws_lb" "this" {
   internal           = false  # Set to false for internet-facing
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb.id]
-  subnets            = public_subnet_ids
+  subnets            = var.public_subnet_ids
 
   enable_deletion_protection = false
 
