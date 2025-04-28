@@ -28,7 +28,7 @@ rds_config = {
 
 # EKS Cluster and Node Group Configuration
 eks_config = {
-  cluster_name    = "my-eks-cluster-aws"
+  cluster_name    = "my-eks-cluster"
   cluster_version = "1.27"
   ami_type        = "AL2_x86_64"             # AMI type for the node group
   instance_types  = ["t3.medium", "t3.large"] # Instance types for the node group
