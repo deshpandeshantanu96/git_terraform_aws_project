@@ -3,6 +3,9 @@ module "vpc" {
   vpc_cidr            = var.vpc_config.vpc_cidr
   public_subnet_cidrs = var.vpc_config.public_subnet_cidrs
   private_subnet_cidrs = var.vpc_config.private_subnet_cidrs
+  enable_nat_gateway     = true
+  single_nat_gateway     = true # Or false for one NAT per AZ
+  one_nat_gateway_per_az = false
 }
 
 module "bastion" {
