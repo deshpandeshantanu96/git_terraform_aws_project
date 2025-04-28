@@ -179,3 +179,24 @@ resource "aws_iam_role_policy_attachment" "lb_controller" {
   role       = aws_iam_role.nodes.name
   policy_arn = aws_iam_policy.lb_controller.arn
 }
+
+resource "aws_iam_policy" "create_policy_permission" {
+  name        = "AllowCreatePolicyPermission"
+  description = "Allows creating IAM policies"
+  
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = "iam:CreatePolicy"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "example" {
+  role       = aws_iam_role.nodes.name
+  policy_arn = aws_iam_policy.create_policy_permission.arn
+}
