@@ -104,3 +104,55 @@ resource "aws_security_group" "cluster" {
   description = "Cluster communication with worker nodes"
   vpc_id      = var.vpc_id
 }
+
+# Security Group for Load Balancer
+resource "aws_security_group" "lb" {
+  name        = "${var.cluster_name}-lb-sg"
+  description = "Load balancer security group"
+  vpc_id      = aws_vpc.main.id
+}
+
+# Create an Application Load Balancer (ALB)
+resource "aws_lb" "this" {
+  name               = "${var.cluster_name}-alb"
+  internal           = false  # Set to false for internet-facing
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.lb.id]
+  subnets            = [aws_subnet.public.id]
+
+  enable_deletion_protection = false
+
+  tags = {
+    Name = "${var.cluster_name}-alb"
+  }
+}
+
+# ALB Target Group (for routing traffic to your EKS service)
+resource "aws_lb_target_group" "this" {
+  name     = "${var.cluster_name}-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = aws_vpc.main.id
+
+  health_check {
+    protocol = "HTTP"
+    path     = "/"
+  }
+}
+
+# ALB Listener (For routing traffic from ALB to the target group)
+resource "aws_lb_listener" "http" {
+  load_balancer_arn = aws_lb.this.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.this.arn
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "nodes_AmazonEKSLoadBalancerControllerPolicy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSLoadBalancerControllerPolicy"
+  role       = aws_iam_role.nodes.name
+}
