@@ -65,26 +65,10 @@ resource "aws_route_table_association" "public" {
 }
 
 resource "aws_eip" "nat" {
-  vpc = true
+  domain = "vpc"  # Use domain instead of vpc (as the deprecation warning suggested)
 }
 
 resource "aws_nat_gateway" "this" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = module.vpc.public_subnets[0] # Place in first public subnet
+  subnet_id     = module.vpc.public_subnets[0]  # Use the first public subnet from the VPC module
+  allocation_id = aws_eip.nat.id                 # The EIP created earlier
 }
-
-resource "aws_route_table" "private" {
-  vpc_id = module.vpc.vpc_id
-
-  route {
-    cidr_block     = "0.0.0.0/0"
-    nat_gateway_id = aws_nat_gateway.this.id
-  }
-}
-
-resource "aws_route_table_association" "private" {
-  count          = length(module.vpc.private_subnets)
-  subnet_id      = module.vpc.private_subnets[count.index]
-  route_table_id = aws_route_table.private.id
-}
-
