@@ -8,7 +8,12 @@ variable "cluster_version" {
   type        = string
 }
 
-variable "subnet_ids" {
+variable "private_subnet_ids" {
+  description = "List of subnet IDs where the EKS cluster will be deployed"
+  type        = list(string)
+}
+
+variable "public_subnet_ids" {
   description = "List of subnet IDs where the EKS cluster will be deployed"
   type        = list(string)
 }

@@ -5,7 +5,7 @@ resource "aws_eks_cluster" "this" {
   version  = var.cluster_version
 
   vpc_config {
-    subnet_ids              = var.subnet_ids
+    subnet_ids              = var.private_subnet_ids
     security_group_ids      = [aws_security_group.cluster.id]
     endpoint_private_access = true
     endpoint_public_access  = true
@@ -47,7 +47,7 @@ resource "aws_eks_node_group" "this" {
   cluster_name    = aws_eks_cluster.this.name
   node_group_name = each.key
   node_role_arn   = aws_iam_role.nodes.arn
-  subnet_ids      = var.subnet_ids
+  subnet_ids      = var.private_subnet_ids
   ami_type        = each.value.ami_type
   instance_types  = each.value.instance_types
   disk_size       = each.value.disk_size
@@ -118,7 +118,7 @@ resource "aws_lb" "this" {
   internal           = false  # Set to false for internet-facing
   load_balancer_type = "application"
   security_groups    = [aws_security_group.lb.id]
-  subnets            = [aws_subnet.public.id]
+  subnets            = public_subnet_ids
 
   enable_deletion_protection = false
 
