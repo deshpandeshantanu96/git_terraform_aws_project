@@ -208,7 +208,7 @@ class DNSManager:
             # Extract required values
             vpc_id = cleaned_data["vpc_id"]["value"]
             all_subnet_ids = cleaned_data["private_subnet_ids"]["value"]
-            subnet_ids = DNSManager.get_subnets_in_different_azs(self, vpc_id, all_subnet_ids)
+            subnet_ids = DNSManager.get_subnets_in_different_azs(self, vpc_id)
             sg_value = cleaned_data["internal_lb_sg_id"]["value"]
             security_group_id = [sg_value] if isinstance(sg_value, str) else sg_value
             
