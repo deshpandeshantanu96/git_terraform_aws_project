@@ -46,7 +46,8 @@
     "value": [
       "subnet-0083d4fd2aa874cc2",
       "subnet-07a4ae7afad6703e3"
-    ],
+    ]
+  },
   "vpc_id": {
     "sensitive": false,
     "type": "string",
