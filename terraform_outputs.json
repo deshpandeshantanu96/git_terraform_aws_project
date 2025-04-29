@@ -34,6 +34,19 @@
       "subnet-028760531295dd607"
     ]
   },
+  "private_subnet_ids": {
+    "sensitive": false,
+    "type": [
+      "tuple",
+      [
+        "string",
+        "string"
+      ]
+    ],
+    "value": [
+      "subnet-0083d4fd2aa874cc2",
+      "subnet-07a4ae7afad6703e3"
+    ],
   "vpc_id": {
     "sensitive": false,
     "type": "string",
