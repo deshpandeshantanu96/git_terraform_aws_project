@@ -128,6 +128,15 @@ class DNSManager:
             logger.error(f"Failed to create DNS record: {e}")
             raise
 
+    def get_unique_az_subnets(self, subnet_ids):
+        subnet_info = self.ec2.describe_subnets(SubnetIds=subnet_ids)
+        az_subnets = {}
+        for subnet in subnet_info['Subnets']:
+            az = subnet['AvailabilityZone']
+            if az not in az_subnets:
+                az_subnets[az] = subnet['SubnetId']
+        return list(az_subnets.values())
+
     def clean_terraform_json_file(self, file_path):
         with open(file_path, 'r') as f:
             lines = f.readlines()
@@ -170,7 +179,8 @@ class DNSManager:
             
             # Extract required values
             vpc_id = cleaned_data["vpc_id"]["value"]
-            subnet_ids = cleaned_data["private_subnet_ids"]["value"]
+            all_subnet_ids = cleaned_data["private_subnet_ids"]["value"]
+            subnet_ids = DNSManager.get_unique_az_subnets(all_subnet_ids)
             sg_value = cleaned_data["internal_lb_sg_id"]["value"]
             security_group_id = [sg_value] if isinstance(sg_value, str) else sg_value
             
