@@ -129,13 +129,41 @@ class DNSManager:
             raise
 
     def get_subnets_in_different_azs(self, vpc_id):
-        subnets = self.ec2.describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [vpc_id]}])
-        az_subnets = {}
-        for subnet in subnets['Subnets']:
-            az = subnet['AvailabilityZone']
-            if az not in az_subnets:
-                az_subnets[az] = subnet['SubnetId']
-        return list(az_subnets.values())[:2]
+        try:
+            # Describe subnets with pagination support
+            paginator = self.ec2.get_paginator('describe_subnets')
+            page_iterator = paginator.paginate(Filters=[{'Name': 'vpc-id', 'Values': [vpc_id]}])
+            
+            # Using a dictionary to group subnets by Availability Zone (AZ)
+            az_subnets = {}
+
+            # Iterate through paginated subnets
+            for page in page_iterator:
+                for subnet in page['Subnets']:
+                    az = subnet['AvailabilityZone']
+                    subnet_id = subnet['SubnetId']
+                    
+                    # Group subnets by Availability Zone (AZ)
+                    if az not in az_subnets:
+                        az_subnets[az] = []
+                    az_subnets[az].append(subnet_id)
+
+            # Ensure we have subnets in at least 2 different AZs
+            selected_subnets = []
+            for az, subnets in az_subnets.items():
+                # Select only one subnet per AZ
+                selected_subnets.append(subnets[0])  # Take the first subnet from each AZ
+                if len(selected_subnets) == 2:  # Stop after selecting 2 subnets
+                    break
+
+            # Handle the case where there are not enough subnets in different AZs
+            if len(selected_subnets) < 2:
+                raise ValueError("Not enough subnets found in different Availability Zones.")
+
+            return selected_subnets
+        except Exception as e:
+            print(f"Error retrieving subnets: {e}")
+            raise
 
     def clean_terraform_json_file(self, file_path):
         with open(file_path, 'r') as f:
@@ -180,7 +208,7 @@ class DNSManager:
             # Extract required values
             vpc_id = cleaned_data["vpc_id"]["value"]
             all_subnet_ids = cleaned_data["private_subnet_ids"]["value"]
-            subnet_ids = DNSManager.get_subnets_in_different_azs(self, all_subnet_ids)
+            subnet_ids = DNSManager.get_subnets_in_different_azs(self, vpc_id, all_subnet_ids)
             sg_value = cleaned_data["internal_lb_sg_id"]["value"]
             security_group_id = [sg_value] if isinstance(sg_value, str) else sg_value
             
