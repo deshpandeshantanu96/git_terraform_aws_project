@@ -171,7 +171,8 @@ class DNSManager:
             # Extract required values
             vpc_id = cleaned_data["vpc_id"]["value"]
             subnet_ids = cleaned_data["private_subnet_ids"]["value"]
-            security_group_id = cleaned_data["internal_lb_sg_id"]["value"]
+            sg_value = cleaned_data["internal_lb_sg_id"]["value"]
+            security_group_id = [sg_value] if isinstance(sg_value, str) else sg_value
             
             return vpc_id, subnet_ids, security_group_id
             
