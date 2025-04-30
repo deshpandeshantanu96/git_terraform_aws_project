@@ -26,7 +26,7 @@ jobs:
         with:
           repository: deshpandeshantanu96/tfvars-repo  # Replace with your terraform-repo
           token: ${{ secrets.TFVAR_REPO_TOKEN }}  # Your GitHub token
-          path: terraform  # Path where the Terraform code will be checked out
+          path: tfvar  # Path where the Terraform code will be checked out
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -47,11 +47,11 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -input=false -var-file="../terraform/terraform.tfvars"
+        run: terraform plan -input=false -var-file="../tfvar/terraform.tfvars"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -input=false -var-file="../terraform/terraform.tfvars"
+        run: terraform apply -auto-approve -input=false -var-file="../tfvar/terraform.tfvars"
 
       - name: Export Terraform Outputs
         run: 
