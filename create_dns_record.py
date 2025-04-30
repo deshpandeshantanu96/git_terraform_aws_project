@@ -226,7 +226,7 @@ def main():
         manager = DNSManager()
         
         # Configuration
-        domain_name = "service.dns_zone.internal"
+        domain_name = "api.buildwithshantanu.site"
         vpc_id, subnet_ids, security_group_ids = manager.load_terraform_outputs()  # Corrected method call
         
         lb_name_pattern = "app"  # Pattern to match internal LB name

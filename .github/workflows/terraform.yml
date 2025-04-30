@@ -21,6 +21,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Checkout Terraform Repo
+        uses: actions/checkout@v2
+        with:
+          repository: deshpandeshantanu96/terraform-repo  # Replace with your terraform-repo
+          token: ${{ secrets.TOKEN_TERRAFORM }}  # Your GitHub token
+          path: terraform  # Path where the Terraform code will be checked out
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
@@ -40,11 +47,11 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -input=false
+        run: terraform plan -input=false -var-file=tfvars-repo/terraform.tfvars
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -auto-approve -input=false -var-file=tfvars-repo/terraform.tfvars
 
       - name: Export Terraform Outputs
         run: 
