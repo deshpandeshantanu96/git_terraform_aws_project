@@ -28,6 +28,13 @@ jobs:
           token: ${{ secrets.TFVAR_REPO_TOKEN }}  # Your GitHub token
           path: tfvar  # Path where the Terraform code will be checked out
 
+      - name: Checkout Terraform Repo
+        uses: actions/checkout@v2
+        with:
+          repository: deshpandeshantanu96/terraform-repo  # Replace with your terraform-repo
+          token: ${{ secrets.TERRAFORM_REPO_TOKEN }}  # Your GitHub token
+          path: terraform  # Path where the Terraform code will be checked out
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
