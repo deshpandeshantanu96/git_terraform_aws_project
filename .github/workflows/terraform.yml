@@ -24,7 +24,7 @@ jobs:
       - name: Checkout Terraform Repo
         uses: actions/checkout@v2
         with:
-          repository: deshpandeshantanu96/terraform-repo  # Replace with your terraform-repo
+          repository: deshpandeshantanu96/tfvars-repo  # Replace with your terraform-repo
           token: ${{ secrets.TOKEN_TERRAFORM }}  # Your GitHub token
           path: terraform  # Path where the Terraform code will be checked out
 
@@ -77,4 +77,4 @@ jobs:
       AWS_DEFAULT_REGION: us-east-1
     secrets: inherit
 
-#Step: 127
+#Step: 128
