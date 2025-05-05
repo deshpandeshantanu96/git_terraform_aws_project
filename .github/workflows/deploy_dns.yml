@@ -52,6 +52,7 @@ jobs:
           AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
 
       - name: Run DNS Setup Script
+        working-directory: ./
         run: |
           python create_dns_record.py
         env:
