@@ -25,13 +25,13 @@ jobs:
         with:
           repository: deshpandeshantanu96/terraform-repo  # Replace with your terraform-repo
           token: ${{ secrets.TERRAFORM_REPO_TOKEN }}  # Your GitHub token
-          path: ./  # Path where the Terraform code will be checked out
+          path: terra  # Path where the Terraform code will be checked out
 
       - name: Download Terraform Outputs
         uses: actions/download-artifact@v4
         with:
           name: terraform-outputs
-          path: ./
+          path: ./terra
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -52,7 +52,7 @@ jobs:
           AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
 
       - name: Run DNS Setup Script
-        working-directory: ./
+        working-directory: ./terra
         run: |
           python create_dns_record.py
         env:
