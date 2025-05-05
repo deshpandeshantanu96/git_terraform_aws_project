@@ -17,15 +17,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout main repo
         uses: actions/checkout@v3
 
       - name: Checkout Terraform Repo
         uses: actions/checkout@v2
         with:
-          repository: deshpandeshantanu96/terraform-repo  # Replace with your terraform-repo
-          token: ${{ secrets.TERRAFORM_REPO_TOKEN }}  # Your GitHub token
-          path: terra  # Path where the Terraform code will be checked out
+          repository: deshpandeshantanu96/terraform-repo
+          token: ${{ secrets.TERRAFORM_REPO_TOKEN }}
+          path: terra  # Check out into "terra" folder
 
       - name: Download Terraform Outputs
         uses: actions/download-artifact@v4
@@ -38,13 +38,13 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Dependencies
+      - name: Install Python Dependencies
         working-directory: ./terra
         run: |
           python -m pip install --upgrade pip
           pip install boto3
-      
-      - name: List files in terra
+
+      - name: Debug - List files in terra
         run: ls -R
         working-directory: ./terra
 
@@ -60,8 +60,8 @@ jobs:
       - name: Run DNS Setup Script
         working-directory: ./terra
         run: |
-          python terraform-repo/create_dns_record.py
-          
+          python create_dns_record.py
+        env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
