@@ -1,28 +1,24 @@
-# name: Deploy DNS Setup
-
-# on:
-#   push:
-#     branches: [ main ]  # or your preferred branch
-#   workflow_call:
-#     inputs:
-#       AWS_DEFAULT_REGION:
-#         required: true
-#         type: string
-#         default: us-east-1
-
 name: Deploy DNS Setup
 
 on:
-  push:
-    branches: [main]
+  workflow_call:
+    inputs:
+      AWS_DEFAULT_REGION:
+        required: true
+        type: string
+        default: us-east-1
+
+permissions:
+  contents: read
 
 jobs:
   setup_dns:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout main repo
+      - name: Checkout main code
         uses: actions/checkout@v3
-        
+
       - name: Checkout terraform-repo
         uses: actions/checkout@v3
         with:
@@ -30,9 +26,35 @@ jobs:
           token: ${{ secrets.TERRAFORM_REPO_TOKEN }}
           path: terraform-repo
 
-      - name: Run DNS script
-        run: python terraform-repo/create_dns_record.py
+      - name: Download Terraform Outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-outputs
+          path: ./
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install boto3
+
+      - name: Verify AWS Credentials
+        run: |
+          aws sts get-caller-identity
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-1'
+          AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
+
+      - name: Run DNS Setup Script
+        working-directory: ./terraform-repo
+        run: |
+          python create_dns_record.py --region ${{ inputs.AWS_DEFAULT_REGION }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
