@@ -43,6 +43,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install boto3
+      
+      - name: List files in terra
+        run: ls -R
+        working-directory: ./terra
 
       - name: Verify AWS Credentials
         working-directory: ./terra
@@ -52,11 +56,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
-
-      - name: List files in terra
-        run: ls -R
-        working-directory: ./terra
-
 
       - name: Run DNS Setup Script
         working-directory: ./terra
