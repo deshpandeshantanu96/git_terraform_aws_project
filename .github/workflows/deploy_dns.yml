@@ -53,6 +53,11 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
 
+      - name: List files in terra
+        run: ls -R
+        working-directory: ./terra
+
+
       - name: Run DNS Setup Script
         working-directory: ./terra
         run: |
