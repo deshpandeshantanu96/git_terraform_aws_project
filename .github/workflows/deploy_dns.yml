@@ -1,60 +1,38 @@
+# name: Deploy DNS Setup
+
+# on:
+#   push:
+#     branches: [ main ]  # or your preferred branch
+#   workflow_call:
+#     inputs:
+#       AWS_DEFAULT_REGION:
+#         required: true
+#         type: string
+#         default: us-east-1
+
 name: Deploy DNS Setup
 
 on:
   push:
-    branches: [ main ]  # or your preferred branch
-  workflow_call:
-    inputs:
-      AWS_DEFAULT_REGION:
-        required: true
-        type: string
-        default: us-east-1
-
-permissions:
-  contents: read
-  actions: read
+    branches: [main]
 
 jobs:
   setup_dns:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout main repository
+      - name: Checkout main repo
         uses: actions/checkout@v3
-        with:
-          path: main-repo
-
-      - name: Checkout Terraform Repo (with the script)
+        
+      - name: Checkout terraform-repo
         uses: actions/checkout@v3
         with:
           repository: deshpandeshantanu96/terraform-repo
           token: ${{ secrets.TERRAFORM_REPO_TOKEN }}
           path: terraform-repo
 
-      - name: Verify script location
-        run: |
-          echo "Checking terraform-repo directory:"
-          ls -la terraform-repo/
-          echo "Checking for Python script:"
-          find terraform-repo/ -name "create_dns_record.py"
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install boto3
-
-      - name: Run DNS Setup Script
-        run: |
-          python terraform-repo/create_dns_record.py
+      - name: Run DNS script
+        run: python terraform-repo/create_dns_record.py
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
-
-      - name: Verify execution
-        run: echo "DNS record creation script executed successfully"
+          AWS_DEFAULT_REGION: 'us-east-1'
