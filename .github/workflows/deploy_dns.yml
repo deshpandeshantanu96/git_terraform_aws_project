@@ -1,6 +1,8 @@
 name: Deploy DNS Setup
 
 on:
+  push:
+    branches: [ main ]  # or your preferred branch
   workflow_call:
     inputs:
       AWS_DEFAULT_REGION:
@@ -17,21 +19,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout main repository
         uses: actions/checkout@v3
+        with:
+          path: main-repo
 
-      - name: Checkout Terraform Repo
-        uses: actions/checkout@v2
+      - name: Checkout Terraform Repo (with the script)
+        uses: actions/checkout@v3
         with:
           repository: deshpandeshantanu96/terraform-repo
           token: ${{ secrets.TERRAFORM_REPO_TOKEN }}
-          path: terra
+          path: terraform-repo
 
-      - name: Download Terraform Outputs
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-outputs
-          path: ./terra
+      - name: Verify script location
+        run: |
+          echo "Checking terraform-repo directory:"
+          ls -la terraform-repo/
+          echo "Checking for Python script:"
+          find terraform-repo/ -name "create_dns_record.py"
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -39,36 +44,17 @@ jobs:
           python-version: '3.10'
 
       - name: Install Dependencies
-        working-directory: ./terra
         run: |
           python -m pip install --upgrade pip
           pip install boto3
-      
-      - name: Verify Repository Contents
-        working-directory: ./terra
-        run: |
-          echo "Current directory: $(pwd)"
-          ls -la
-          echo "Searching for Python script..."
-          find . -name "*.py" -type f
 
       - name: Run DNS Setup Script
-        working-directory: ./terra
         run: |
-          # First try root directory
-          if [ -f "create_dns_record.py" ]; then
-            python create_dns_record.py
-          # Then check common locations
-          elif [ -f "scripts/create_dns_record.py" ]; then
-            python scripts/create_dns_record.py
-          elif [ -f "dns/create_dns_record.py" ]; then
-            python dns/create_dns_record.py
-          else
-            echo "ERROR: create_dns_record.py not found!"
-            find . -type f -name "*.py"
-            exit 1
-          fi
+          python terraform-repo/create_dns_record.py
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
+
+      - name: Verify execution
+        run: echo "DNS record creation script executed successfully"
