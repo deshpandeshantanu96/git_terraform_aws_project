@@ -10,14 +10,14 @@ on:
 
 permissions:
   contents: read
-  actions: read  # Required for downloading artifacts
+  actions: read
 
 jobs:
   setup_dns:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout main repo
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Checkout Terraform Repo
@@ -25,7 +25,7 @@ jobs:
         with:
           repository: deshpandeshantanu96/terraform-repo
           token: ${{ secrets.TERRAFORM_REPO_TOKEN }}
-          path: terra  # Check out into "terra" folder
+          path: terra
 
       - name: Download Terraform Outputs
         uses: actions/download-artifact@v4
@@ -38,29 +38,36 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Python Dependencies
+      - name: Install Dependencies
         working-directory: ./terra
         run: |
           python -m pip install --upgrade pip
           pip install boto3
-
-      - name: Debug - List files in terra
-        run: ls -R
-        working-directory: ./terra
-
-      - name: Verify AWS Credentials
+      
+      - name: Verify Repository Contents
         working-directory: ./terra
         run: |
-          aws sts get-caller-identity
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
+          echo "Current directory: $(pwd)"
+          ls -la
+          echo "Searching for Python script..."
+          find . -name "*.py" -type f
 
       - name: Run DNS Setup Script
         working-directory: ./terra
         run: |
-          python create_dns_record.py
+          # First try root directory
+          if [ -f "create_dns_record.py" ]; then
+            python create_dns_record.py
+          # Then check common locations
+          elif [ -f "scripts/create_dns_record.py" ]; then
+            python scripts/create_dns_record.py
+          elif [ -f "dns/create_dns_record.py" ]; then
+            python dns/create_dns_record.py
+          else
+            echo "ERROR: create_dns_record.py not found!"
+            find . -type f -name "*.py"
+            exit 1
+          fi
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
