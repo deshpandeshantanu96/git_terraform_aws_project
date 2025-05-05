@@ -60,8 +60,8 @@ jobs:
       - name: Run DNS Setup Script
         working-directory: ./terra
         run: |
-          python create_dns_record.py
-        env:
+          python terraform-repo/create_dns_record.py
+          
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ inputs.AWS_DEFAULT_REGION }}
