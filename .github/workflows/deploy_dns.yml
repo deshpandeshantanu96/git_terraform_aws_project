@@ -1,19 +1,12 @@
 name: Deploy DNS Setup
 
-
-# on:
-#   workflow_call:
-#     inputs:
-#       AWS_DEFAULT_REGION:
-#         required: true
-#         type: string
-#         default: us-east-1
-
-
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      AWS_DEFAULT_REGION:
+        required: true
+        type: string
+        default: us-east-1
 
 permissions:
   contents: read
