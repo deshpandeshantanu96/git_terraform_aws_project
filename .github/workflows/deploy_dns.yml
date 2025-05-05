@@ -9,8 +9,6 @@ name: Deploy DNS Setup
       #   type: string
       #   default: us-east-1
 
-name: Deploy DNS Setup
-
 on:
   push:
     branches: [main]
