@@ -1,6 +1,5 @@
 name: Deploy DNS Setup
 
-
 on:
   workflow_call:
     inputs:
@@ -8,10 +7,6 @@ on:
         required: true
         type: string
         default: us-east-1
-
-# on:
-#   push:
-#     branches: [main]
 
 jobs:
   setup_dns:
@@ -27,13 +22,25 @@ jobs:
           token: ${{ secrets.TERRAFORM_REPO_TOKEN }}
           path: terraform-repo
 
+      - name: Download Terraform Outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-outputs
+          path: terraform-repo/
+
+      - name: Verify Terraform Outputs
+        run: |
+          echo "Checking terraform_outputs.json..."
+          ls -la terraform-repo/
+          cat terraform-repo/terraform_outputs.json | jq .
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: pip install boto3
+        run: pip install boto3 jq
 
       - name: Run DNS setup
         working-directory: ./terraform-repo
