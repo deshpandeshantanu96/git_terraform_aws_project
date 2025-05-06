@@ -28,11 +28,11 @@ jobs:
           token: ${{ secrets.TERRAFORM_REPO_TOKEN }}
           path: terraform-repo
 
-      - name: Download Terraform Outputs
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-outputs
-          path: terraform-repo/
+      # - name: Download Terraform Outputs
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: terraform-outputs
+      #     path: terraform-repo/
 
       - name: Verify Terraform Outputs
         run: |
