@@ -34,11 +34,11 @@ jobs:
       #     name: terraform-outputs
       #     path: terraform-repo/
 
-      - name: Verify Terraform Outputs
-        run: |
-          echo "Checking terraform_outputs.json..."
-          ls -la terraform-repo/
-          cat terraform-repo/terraform_outputs.json | jq .
+      # - name: Verify Terraform Outputs
+      #   run: |
+      #     echo "Checking terraform_outputs.json..."
+      #     ls -la terraform-repo/
+      #     cat terraform-repo/terraform_outputs.json | jq .
 
       - name: Set up Python
         uses: actions/setup-python@v4
